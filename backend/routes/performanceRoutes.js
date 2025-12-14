@@ -6,6 +6,8 @@ const path = require("path");
 
 const auth = require("../middleware/authMiddleware");
 const Performance = require("../models/Performance");
+const { validatePerformance } = require("../utils/validators");
+const { asyncHandler } = require("../utils/errorHandler");
 
 // ---------- Multer config ----------
 const storage = multer.diskStorage({
@@ -23,63 +25,98 @@ const fileFilter = (req, file, cb) => {
   else cb(new Error("Only video files allowed"), false);
 };
 
-const upload = multer({ storage, fileFilter });
+// Limit file size to 50MB
+const upload = multer({ 
+  storage, 
+  fileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 }
+});
 
 // ---------- 1) Add performance ----------
 router.post(
   "/add",
   auth,
   upload.single("videoFile"),
-  async (req, res) => {
-    try {
-      const { sport, speed, stamina, strength, videoUrl } = req.body;
+  asyncHandler(async (req, res) => {
+    const { sport, speed, stamina, strength, videoUrl } = req.body;
 
-      const perf = new Performance({
-        userId: req.user.id,
-        sport,
-        speed,
-        stamina,
-        strength,
-        videoUrl: videoUrl || "",
-        videoFile: req.file ? `/uploads/${req.file.filename}` : "",
+    // Validate performance data
+    const validation = validatePerformance(req.body);
+    if (!validation.isValid) {
+      return res.status(400).json({ 
+        message: "Validation failed", 
+        errors: validation.errors 
       });
-
-      await perf.save();
-      res.json({ message: "Performance saved", performance: perf });
-
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Error saving performance" });
     }
-  }
+
+    const perf = new Performance({
+      userId: req.user.id,
+      sport: sport.trim(),
+      speed: Number(speed),
+      stamina: Number(stamina),
+      strength: Number(strength),
+      videoUrl: videoUrl || "",
+      videoFile: req.file ? `/uploads/${req.file.filename}` : "",
+    });
+
+    await perf.save();
+    res.status(201).json({ message: "Performance saved", performance: perf });
+  })
 );
 
 // ---------- 2) Player: Get My Performance ----------
-router.get("/my", auth, async (req, res) => {
-  try {
-    const data = await Performance.find({ userId: req.user.id })
-      .sort({ createdAt: -1 });
+router.get("/my", auth, asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
 
-    res.json(data);
+  const data = await Performance.find({ userId: req.user.id })
+    .sort({ createdAt: -1 })
+    .limit(Number(limit))
+    .skip(skip);
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  const total = await Performance.countDocuments({ userId: req.user.id });
+
+  res.json({
+    data,
+    pagination: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      pages: Math.ceil(total / limit)
+    }
+  });
+}));
 
 // ---------- 3) Coach/Admin: Get All Performance ----------
-router.get("/all", auth, async (req, res) => {
-  try {
-    if (req.user.role !== "coach" && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const data = await Performance.find().sort({ createdAt: -1 });
-    res.json(data);
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+router.get("/all", auth, asyncHandler(async (req, res) => {
+  if (req.user.role !== "coach" && req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied" });
   }
-});
+
+  const { page = 1, limit = 20, sport } = req.query;
+  const skip = (page - 1) * limit;
+
+  // Build query
+  const query = {};
+  if (sport) query.sport = sport;
+
+  const data = await Performance.find(query)
+    .populate("userId", "name email sport")
+    .sort({ createdAt: -1 })
+    .limit(Number(limit))
+    .skip(skip);
+
+  const total = await Performance.countDocuments(query);
+
+  res.json({
+    data,
+    pagination: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      pages: Math.ceil(total / limit)
+    }
+  });
+}));
 
 module.exports = router;

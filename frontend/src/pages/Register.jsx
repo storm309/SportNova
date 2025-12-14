@@ -11,7 +11,7 @@ import api from "../api/api";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "player" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "player", age: "", gender: "" });
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +139,40 @@ export default function Register() {
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Age and Gender Row */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Age Input */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Age</label>
+                <input 
+                  name="age" 
+                  placeholder="25" 
+                  type="number" 
+                  min="5" 
+                  max="100" 
+                  value={form.age} 
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-700/50 rounded-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium" 
+                  onChange={handleChange} 
+                />
+              </div>
+
+              {/* Gender Select */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Gender</label>
+                <select 
+                  name="gender" 
+                  value={form.gender} 
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-700/50 rounded-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium" 
+                  onChange={handleChange}
+                >
+                  <option value="" className="bg-slate-900">Select</option>
+                  <option value="male" className="bg-slate-900">Male</option>
+                  <option value="female" className="bg-slate-900">Female</option>
+                  <option value="other" className="bg-slate-900">Other</option>
+                </select>
               </div>
             </div>
 
