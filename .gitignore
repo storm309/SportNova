@@ -15,6 +15,9 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+# Documentation files
+*.md
+
 # Cache folders
 .cache/
 .parcel-cache/
