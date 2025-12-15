@@ -8,7 +8,7 @@ const performanceSchema = new mongoose.Schema({
   stamina: { type: Number, required: true, min: 0, max: 100 },
   strength: { type: Number, required: true, min: 0, max: 100 },
 
-  // ✅ video support
+  //  video support
   videoUrl: { type: String, default: "" },   // YouTube / external url
   videoFile: { type: String, default: "" },  // uploaded file path
 

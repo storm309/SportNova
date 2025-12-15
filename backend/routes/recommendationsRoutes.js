@@ -8,92 +8,107 @@ const { asyncHandler } = require("../utils/errorHandler");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /* --------------------------------------
-   GET RECOMMENDATIONS BY SPORT
+   GET RECOMMENDATIONS OR ANSWERS
 -------------------------------------- */
 router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
-  const { sport, count = 5 } = req.body;
-  const userRole = req.user.role; // Get role from authenticated user
+  // Frontend se 'type' bhi accept karein (search vs training)
+  const { sport, count = 5, type = "training" } = req.body;
+  const userRole = req.user.role; 
 
   if (!sport || sport.trim().length < 2) {
-    return res.status(400).json({ message: "Valid sport type is required" });
+    return res.status(400).json({ message: "Valid input is required" });
   }
 
   if (!process.env.GEMINI_API_KEY) {
     return res.status(500).json({ 
-      message: "Gemini API key not configured. Please add GEMINI_API_KEY to .env file" 
+      message: "Gemini API key not configured." 
     });
   }
 
-  // Validate count
-  const recommendationCount = Math.min(Math.max(1, Number(count)), 10); // Between 1-10
-
-  // Get the generative model
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.0-flash-exp",
+    model: "gemini-2.0-flash", // Ya "gemini-2.0-flash-exp"
     generationConfig: { responseMimeType: "application/json" }
   });
 
-  // Create role-specific prompts
-  const rolePrompts = {
-    player: `Generate ${recommendationCount} specific and actionable training recommendations for ${sport} players to improve their performance. 
-    Focus on skill development, technique improvement, fitness training, and personal development.`,
-    
-    coach: `Generate ${recommendationCount} professional coaching strategies and training methods for ${sport} coaches. 
-    Focus on team management, training session planning, player development techniques, and coaching best practices.`,
-    
-    scout: `Generate ${recommendationCount} strategic scouting insights and talent identification tips for ${sport} scouts. 
-    Focus on player evaluation criteria, talent spotting techniques, performance analysis, and recruitment strategies.`,
-    
-    admin: `Generate ${recommendationCount} strategic management and operational recommendations for ${sport} program administrators. 
-    Focus on program development, resource management, policy implementation, and organizational excellence.`
-  };
-
-  const basePrompt = rolePrompts[userRole] || rolePrompts.player;
-
-  // Create the prompt
-  const prompt = `${basePrompt}
-  Each recommendation should be practical, specific to ${sport}, and relevant to a ${userRole}'s needs.
+  // --- LOGIC TO DECIDE PROMPT TYPE ---
   
-  You must return a JSON array of objects with this structure:
-  [
-    {
-      "title": "Brief title",
-      "description": "Detailed description",
-      "category": "Technique, Fitness, Mental, Strategy, or Nutrition"
-    }
-  ]
-  
-  Ensure each recommendation is unique and actionable.`;
+  const isSearchMode = type === "search" || sport.split(" ").length > 3;
 
-  // Generate content
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+  let prompt;
 
-  // Parse the JSON response
-  let recommendations;
-  try {
-    recommendations = JSON.parse(text);
-  } catch (parseError) {
-    console.error("Failed to parse Gemini response:", text);
-    // Fallback regex in case JSON mode slips
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
-      recommendations = JSON.parse(jsonMatch[0]);
-    } else {
-      return res.status(500).json({ 
-        message: "Failed to parse recommendations",
-        rawResponse: text
-      });
-    }
+  if (isSearchMode) {
+
+    prompt = `
+      You are an expert sports AI consultant. The user (${userRole}) has asked this specific question or topic: "${sport}".
+      
+      Provide a direct, conversational, and highly accurate answer. 
+      Do NOT generate random drills unless specifically asked. 
+      
+      Split your answer into logical parts (paragraphs or key points).
+      You MUST return a JSON array with this structure:
+      [
+        {
+          "title": "A short heading for this part of the answer",
+          "description": "The detailed content/answer text.",
+          "category": "Insight" 
+        }
+      ]
+      
+      Keep the "category" as "Insight", "Fact", or "History" based on the content.
+    `;
+  } else {
+    // --- MODE 2: TRAINING DRILLS (OLD LOGIC) ---
+    
+    const recommendationCount = Math.min(Math.max(1, Number(count)), 10);
+    
+    const rolePrompts = {
+      player: `Generate ${recommendationCount} actionable training recommendations for ${sport} players. Focus on skills, fitness, and technique.`,
+      coach: `Generate ${recommendationCount} coaching strategies for ${sport} coaches. Focus on team management and drills.`,
+      scout: `Generate ${recommendationCount} scouting tips for ${sport}. Focus on talent identification.`,
+      admin: `Generate ${recommendationCount} management tips for ${sport} programs.`
+    };
+
+    const basePrompt = rolePrompts[userRole] || rolePrompts.player;
+
+    prompt = `
+      ${basePrompt}
+      You must return a JSON array of objects with this structure:
+      [
+        {
+          "title": "Brief title",
+          "description": "Detailed description",
+          "category": "Technique, Fitness, Mental, Strategy, or Nutrition"
+        }
+      ]
+      Ensure recommendations are unique.
+    `;
   }
 
-  res.json({
-    sport,
-    recommendations,
-    count: recommendations.length,
-    role: userRole
-  });
+  // Generate content
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Parse JSON
+    let recommendations;
+    recommendations = JSON.parse(text);
+
+    res.json({
+      sport,
+      recommendations,
+      count: recommendations.length,
+      role: userRole,
+      mode: isSearchMode ? "search" : "training" 
+    });
+
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    return res.status(500).json({ 
+      message: "AI Service Error",
+      error: error.message 
+    });
+  }
 }));
 
 module.exports = router;
