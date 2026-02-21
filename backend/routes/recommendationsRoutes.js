@@ -13,25 +13,25 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
   // Frontend se 'type' bhi accept karein (search vs training)
   const { sport, count = 5, type = "training" } = req.body;
-  const userRole = req.user.role; 
+  const userRole = req.user.role;
 
   if (!sport || sport.trim().length < 2) {
     return res.status(400).json({ message: "Valid input is required" });
   }
 
   if (!process.env.GEMINI_API_KEY) {
-    return res.status(500).json({ 
-      message: "Gemini API key not configured." 
+    return res.status(500).json({
+      message: "Gemini API key not configured."
     });
   }
 
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.0-flash", // Ya "gemini-2.0-flash-exp"
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash", // Ya "gemini-2.0-flash-exp"
     generationConfig: { responseMimeType: "application/json" }
   });
 
   // --- LOGIC TO DECIDE PROMPT TYPE ---
-  
+
   const isSearchMode = type === "search" || sport.split(" ").length > 3;
 
   let prompt;
@@ -58,9 +58,9 @@ router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
     `;
   } else {
     // --- MODE 2: TRAINING DRILLS (OLD LOGIC) ---
-    
+
     const recommendationCount = Math.min(Math.max(1, Number(count)), 10);
-    
+
     const rolePrompts = {
       player: `Generate ${recommendationCount} actionable training recommendations for ${sport} players. Focus on skills, fitness, and technique.`,
       coach: `Generate ${recommendationCount} coaching strategies for ${sport} coaches. Focus on team management and drills.`,
@@ -99,14 +99,14 @@ router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
       recommendations,
       count: recommendations.length,
       role: userRole,
-      mode: isSearchMode ? "search" : "training" 
+      mode: isSearchMode ? "search" : "training"
     });
 
   } catch (error) {
     console.error("Gemini Error:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: "AI Service Error",
-      error: error.message 
+      error: error.message
     });
   }
 }));
