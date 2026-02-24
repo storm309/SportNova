@@ -9,18 +9,14 @@ import {
 } from "lucide-react";
 import api from "../api/api";
 import SportsRecommendations from "../components/SportsRecommendations";
-
-// --- CHART COMPONENT - Enhanced ---
 const PerformanceChart = ({ data }) => {
-  // Ensure data is an array
   const chartData = Array.isArray(data) ? data : [];
   const maxValue = chartData.length > 0 
     ? Math.max(...chartData.map(d => Math.max(d.speed || 0, d.stamina || 0)), 100)
     : 100;
-
   return (
     <div className="h-48 flex items-end justify-between px-2 sm:px-4 pb-4 gap-1 sm:gap-2 relative">
-      {/* Grid Background */}
+      {}
       <div className="absolute inset-0 border-b border-l border-white/10 opacity-30"
         style={{
           backgroundImage:
@@ -28,7 +24,6 @@ const PerformanceChart = ({ data }) => {
           backgroundSize: "20px 20px",
         }}
       />
-
       {chartData.length === 0 ? (
         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 text-xs font-bold uppercase">
           <BarChart2 className="w-8 h-8 mb-2 opacity-50" />
@@ -37,21 +32,21 @@ const PerformanceChart = ({ data }) => {
       ) : (
         chartData.map((p, i) => (
           <div key={i} className="relative w-full flex items-end group">
-            {/* Speed Bar */}
+            {}
             <motion.div
               initial={{ height: 0 }}
               animate={{ height: `${((p.speed || 0) / maxValue) * 100}%` }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t hover:from-blue-500 hover:to-blue-300 transition-all cursor-pointer"
             />
-            {/* Stamina Overlay */}
+            {}
             <motion.div
               initial={{ height: 0 }}
               animate={{ height: `${((p.stamina || 0) / maxValue) * 100}%` }}
               transition={{ duration: 0.5, delay: i * 0.1 + 0.2 }}
               className="absolute bottom-0 w-full bg-gradient-to-t from-orange-500/70 to-orange-400/70 rounded-t"
             />
-            {/* Tooltip */}
+            {}
             <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-700 rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap">
               <div className="text-xs font-bold text-blue-400">Speed: {p.speed || 0}</div>
               <div className="text-xs font-bold text-orange-400">Stamina: {p.stamina || 0}</div>
@@ -63,32 +58,24 @@ const PerformanceChart = ({ data }) => {
     </div>
   );
 };
-
 export default function CoachDashboard() {
   const navigate = useNavigate();
-
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [performance, setPerformance] = useState([]);
-
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [msg, setMsg] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
   // Comparison
   const [p1, setP1] = useState("");
   const [p2, setP2] = useState("");
   const [compareData, setCompareData] = useState(null);
-
   useEffect(() => { loadPlayers(); }, []);
-
   const loadPlayers = async () => {
     try {
       const res = await api.get("/coach/players");
-      // Handle both array (old format) and paginated object (new format)
       const playersData = Array.isArray(res.data) ? res.data : (res.data.data || []);
       setPlayers(playersData);
       setFilteredPlayers(playersData);
@@ -99,25 +86,21 @@ export default function CoachDashboard() {
       setFilteredPlayers([]);
     }
   };
-
   const loadPerformance = async (playerId) => {
     try {
       setSelectedPlayer(playerId);
       const res = await api.get(`/coach/player/${playerId}/performance`);
-      // Handle array response
       const performanceData = Array.isArray(res.data) ? res.data : [];
       setPerformance(performanceData);
-      setMobileSidebarOpen(false); // Close sidebar on mobile after selection
+      setMobileSidebarOpen(false); 
     } catch (err) {
       console.log(err);
       setMsg("Could not load performance.");
       setPerformance([]);
     }
   };
-
   const comparePlayers = async () => {
     if (!p1 || !p2 || p1 === p2) return;
-
     try {
       const res = await api.get(`/coach/compare?p1=${p1}&p2=${p2}`);
       setCompareData(res.data);
@@ -125,14 +108,11 @@ export default function CoachDashboard() {
       console.log(err);
     }
   };
-
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
-
-  // Search filter
   useEffect(() => {
     setFilteredPlayers(
       players.filter((p) =>
@@ -140,21 +120,15 @@ export default function CoachDashboard() {
       )
     );
   }, [searchTerm, players]);
-
-  // Get selected player info
   const selectedPlayerInfo = players.find(p => p._id === selectedPlayer);
-
-  // Calculate average performance
   const avgPerformance = Array.isArray(performance) && performance.length > 0 ? {
     speed: Math.round(performance.reduce((sum, p) => sum + (p.speed || 0), 0) / performance.length),
     stamina: Math.round(performance.reduce((sum, p) => sum + (p.stamina || 0), 0) / performance.length),
     strength: Math.round(performance.reduce((sum, p) => sum + (p.strength || 0), 0) / performance.length),
   } : null;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-
-      {/* HEADER - Sticky with backdrop blur */}
+      {}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -163,8 +137,7 @@ export default function CoachDashboard() {
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            
-            {/* Logo & Title */}
+            {}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
                 <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
@@ -176,8 +149,7 @@ export default function CoachDashboard() {
                 <p className="text-[10px] text-slate-500 hidden sm:block">Coach Dashboard</p>
               </div>
             </div>
-
-            {/* Desktop Actions */}
+            {}
             <div className="hidden md:flex items-center gap-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -188,7 +160,6 @@ export default function CoachDashboard() {
               >
                 <RefreshCw className="w-5 h-5" />
               </motion.button>
-
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -198,8 +169,7 @@ export default function CoachDashboard() {
                 <LogOut className="w-4 h-4" /> Logout
               </motion.button>
             </div>
-
-            {/* Mobile Menu Button */}
+            {}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
@@ -207,8 +177,7 @@ export default function CoachDashboard() {
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
-
-          {/* Mobile Menu */}
+          {}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
@@ -242,11 +211,9 @@ export default function CoachDashboard() {
           </AnimatePresence>
         </div>
       </motion.div>
-
-      {/* MAIN CONTENT */}
+      {}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
-        {/* Stats Overview - Mobile Friendly */}
+        {}
         {selectedPlayerInfo && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -282,14 +249,11 @@ export default function CoachDashboard() {
             </div>
           </motion.div>
         )}
-
-        {/* GRID LAYOUT */}
+        {}
         <div className="grid lg:grid-cols-12 gap-4 sm:gap-6">
-
-          {/* LEFT: PLAYER LIST - Hidden on mobile by default, toggle with button */}
+          {}
           <div className="lg:col-span-3 relative">
-            
-            {/* Mobile Toggle Button */}
+            {}
             <button
               onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
               className="lg:hidden w-full mb-4 p-3 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center gap-2 font-bold"
@@ -297,8 +261,7 @@ export default function CoachDashboard() {
               <Users className="w-5 h-5" />
               {mobileSidebarOpen ? "Hide Players" : "Show Players"} ({filteredPlayers.length})
             </button>
-
-            {/* Sidebar */}
+            {}
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -307,13 +270,11 @@ export default function CoachDashboard() {
                 mobileSidebarOpen ? 'block' : 'hidden'
               } lg:block bg-slate-900/80 backdrop-blur-sm p-4 rounded-xl border border-white/10 lg:h-[calc(100vh-200px)] overflow-y-auto`}
             >
-
               <h2 className="text-lg font-bold uppercase mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5 text-blue-400" /> Players
                 <span className="text-sm text-slate-500 font-normal">({filteredPlayers.length})</span>
               </h2>
-
-              {/* Search */}
+              {}
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
                 <input
@@ -324,8 +285,7 @@ export default function CoachDashboard() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
-              {/* Player Cards */}
+              {}
               <div className="space-y-2">
                 {filteredPlayers.length === 0 ? (
                   <div className="text-center py-8 text-slate-500">
@@ -368,11 +328,9 @@ export default function CoachDashboard() {
                   ))
                 )}
               </div>
-
             </motion.div>
           </div>
-
-          {/* MIDDLE: PERFORMANCE FEED */}
+          {}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -382,7 +340,6 @@ export default function CoachDashboard() {
             <h2 className="text-lg font-bold uppercase mb-4 flex items-center gap-2">
               <Activity className="w-5 h-5 text-green-400" /> Recent Performance
             </h2>
-
             {!selectedPlayer ? (
               <div className="h-full flex flex-col items-center justify-center text-slate-500 py-20">
                 <Target className="w-16 h-16 mb-4 opacity-50" />
@@ -411,8 +368,7 @@ export default function CoachDashboard() {
                           {new Date(p.createdAt).toLocaleDateString()} at {new Date(p.createdAt).toLocaleTimeString()}
                         </p>
                       </div>
-
-                      {/* Video buttons */}
+                      {}
                       <div className="flex gap-2">
                         {p.videoUrl && (
                           <motion.a
@@ -426,7 +382,6 @@ export default function CoachDashboard() {
                             <PlayCircle className="w-4 h-4 text-blue-400" />
                           </motion.a>
                         )}
-
                         {p.videoFile && (
                           <motion.a
                             whileHover={{ scale: 1.05 }}
@@ -441,8 +396,7 @@ export default function CoachDashboard() {
                         )}
                       </div>
                     </div>
-
-                    {/* Stats */}
+                    {}
                     <div className="grid grid-cols-3 gap-2">
                       <Stat icon={<Zap />} label="Speed" value={p.speed} color="blue" />
                       <Stat icon={<Heart />} label="Stamina" value={p.stamina} color="orange" />
@@ -453,11 +407,9 @@ export default function CoachDashboard() {
               </div>
             )}
           </motion.div>
-
-          {/* RIGHT: ANALYTICS */}
+          {}
           <div className="lg:col-span-4 space-y-4 sm:space-y-6">
-
-            {/* Trend Chart */}
+            {}
             <motion.div 
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -467,12 +419,10 @@ export default function CoachDashboard() {
               <h2 className="text-lg font-bold uppercase flex items-center gap-2 mb-4">
                 <TrendingUp className="text-purple-400" /> Trend Analysis
               </h2>
-
               <div className="border border-slate-700 bg-slate-950/50 rounded-xl overflow-hidden">
                 <PerformanceChart data={performance} />
               </div>
-
-              {/* Legend */}
+              {}
               {performance.length > 0 && (
                 <div className="flex items-center justify-center gap-4 mt-4 text-xs">
                   <div className="flex items-center gap-2">
@@ -486,8 +436,7 @@ export default function CoachDashboard() {
                 </div>
               )}
             </motion.div>
-
-            {/* Comparison */}
+            {}
             <motion.div 
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -497,7 +446,6 @@ export default function CoachDashboard() {
               <h2 className="text-lg font-bold uppercase flex items-center gap-2 mb-4">
                 <Swords className="text-orange-400" /> Compare Players
               </h2>
-
               <div className="space-y-3">
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Player 1</label>
@@ -512,7 +460,6 @@ export default function CoachDashboard() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Player 2</label>
                   <select
@@ -526,7 +473,6 @@ export default function CoachDashboard() {
                     ))}
                   </select>
                 </div>
-
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -537,8 +483,7 @@ export default function CoachDashboard() {
                   Compare Players
                 </motion.button>
               </div>
-
-              {/* Comparison Result */}
+              {}
               {compareData && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
@@ -559,8 +504,7 @@ export default function CoachDashboard() {
             </motion.div>
           </div>
         </div>
-
-        {/* AI RECOMMENDATIONS SECTION */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -569,22 +513,17 @@ export default function CoachDashboard() {
         >
           <SportsRecommendations userRole="coach" />
         </motion.div>
-
       </div>
     </div>
   );
 }
-
-// --- HELPERS ---
 const Stat = ({ icon, label, value, color }) => {
   const colorMap = {
     blue: { bg: "bg-blue-500/10", border: "border-blue-500/30", text: "text-blue-400" },
     orange: { bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-400" },
     purple: { bg: "bg-purple-500/10", border: "border-purple-500/30", text: "text-purple-400" },
   };
-
   const colors = colorMap[color];
-
   return (
     <div className={`${colors.bg} border ${colors.border} p-3 rounded-lg text-center`}>
       <div className="flex items-center justify-center gap-1 mb-1">
@@ -595,13 +534,11 @@ const Stat = ({ icon, label, value, color }) => {
     </div>
   );
 };
-
 const ComparisonBar = ({ label, p1, p2 }) => {
   const total = p1 + p2;
   const pct1 = ((p1 / total) * 100).toFixed(1);
   const pct2 = ((p2 / total) * 100).toFixed(1);
   const winner = p1 > p2 ? 1 : 2;
-
   return (
     <div>
       <div className="flex justify-between items-center text-xs text-slate-400 mb-2">
@@ -615,7 +552,6 @@ const ComparisonBar = ({ label, p1, p2 }) => {
           <span className="font-bold">Player 2</span>
         </div>
       </div>
-
       <div className="flex h-4 rounded-full overflow-hidden border border-slate-700">
         <motion.div 
           initial={{ width: 0 }}
@@ -630,7 +566,6 @@ const ComparisonBar = ({ label, p1, p2 }) => {
           className="bg-gradient-to-r from-orange-500 to-orange-600" 
         />
       </div>
-
       <div className="flex justify-between text-sm mt-2 font-bold">
         <span className="text-blue-400">{p1}</span>
         <span className="text-orange-400">{p2}</span>

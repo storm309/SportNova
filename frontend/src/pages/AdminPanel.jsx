@@ -7,11 +7,8 @@ import {
   UserCog, Trophy, ChevronDown, AlertCircle, Ban, Menu, X,
   Filter, Download, RefreshCw
 } from "lucide-react";
-
-// --- REAL API ---
 import api from "../api/api";
 import SportsRecommendations from "../components/SportsRecommendations";
-
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,40 +17,30 @@ export default function AdminPanel() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterRole, setFilterRole] = useState("");
   const navigate = useNavigate();
-
   // 🚨 redirect if not admin
   const validateAdmin = async () => {
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
         navigate("/login");
         return;
       }
-
       const res = await api.get("/auth/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       if (res.data.user.role !== "admin") {
         navigate("/dashboard");
       }
-
     } catch (err) {
       navigate("/login");
     }
   };
-
-  // Load all users
   const loadUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-
       const res = await api.get("/admin/users", {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      // Handle both array (old format) and paginated object (new format)
       const usersData = Array.isArray(res.data) ? res.data : (res.data.data || []);
       setUsers(usersData);
     } catch (err) {
@@ -64,68 +51,51 @@ export default function AdminPanel() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     validateAdmin();
     loadUsers();
   }, []);
-
-  // Change User Role
   const changeRole = async (id, role) => {
     try {
       const token = localStorage.getItem("token");
-
       const res = await api.patch(
         `/admin/users/${id}/role`,
         { role },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setUsers(users.map(u => u._id === id ? res.data : u));
       setMsg(`User role updated to ${role.toUpperCase()}`);
-
       setTimeout(() => setMsg(""), 2000);
     } catch (err) {
       console.log(err);
       setMsg("Error updating role");
     }
   };
-
-  // Delete User
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure? This cannot be undone.")) return;
-
     try {
       const token = localStorage.getItem("token");
-
       await api.delete(`/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setUsers(users.filter(u => u._id !== id));
       setMsg("User deleted");
-
       setTimeout(() => setMsg(""), 2000);
     } catch (err) {
       console.log(err);
       setMsg("Error deleting user");
     }
   };
-
-  // Logout
   const logout = () => {
     localStorage.clear();
     navigate("/login");
   };
-
-  // Filter Users - Enhanced with role filter
   const filteredUsers = Array.isArray(users) ? users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = !filterRole || user.role === filterRole;
     return matchesSearch && matchesRole;
   }) : [];
-
   const getRoleColor = (role) => {
     switch(role) {
       case 'admin': return 'border-purple-500 text-purple-400 bg-purple-500/10';
@@ -134,7 +104,6 @@ export default function AdminPanel() {
       default: return 'border-emerald-500 text-emerald-400 bg-emerald-500/10';
     }
   };
-
   const getRoleBadgeColor = (role) => {
     switch(role) {
       case 'admin': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
@@ -143,8 +112,6 @@ export default function AdminPanel() {
       default: return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     }
   };
-
-  // Stats calculation
   const stats = {
     total: users.length,
     admins: users.filter(u => u.role === 'admin').length,
@@ -152,13 +119,10 @@ export default function AdminPanel() {
     players: users.filter(u => u.role === 'player').length,
     scouts: users.filter(u => u.role === 'scout').length,
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans pb-10">
-      
-      {/* HEADER - Mobile Responsive */}
+      {}
       <div className="relative z-10 w-full">
-        
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,8 +131,7 @@ export default function AdminPanel() {
         >
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
-              
-              {/* Logo & Title */}
+              {}
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
                   <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" />
@@ -185,8 +148,7 @@ export default function AdminPanel() {
                   <span className="text-purple-500">Admin</span>
                 </h1>
               </div>
-
-              {/* Desktop Actions */}
+              {}
               <div className="hidden md:flex items-center gap-3">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -197,7 +159,6 @@ export default function AdminPanel() {
                 >
                   <RefreshCw className="w-5 h-5" />
                 </motion.button>
-
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -208,8 +169,7 @@ export default function AdminPanel() {
                   <span className="hidden sm:inline">Logout</span>
                 </motion.button>
               </div>
-
-              {/* Mobile Menu Button */}
+              {}
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
@@ -217,8 +177,7 @@ export default function AdminPanel() {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
-
-            {/* Mobile Menu */}
+            {}
             <AnimatePresence>
               {mobileMenuOpen && (
                 <motion.div
@@ -252,8 +211,7 @@ export default function AdminPanel() {
             </AnimatePresence>
           </div>
         </motion.div>
-
-        {/* Stats Cards - Responsive Grid */}
+        {}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
             <StatCard icon={<Users />} label="Total Users" value={stats.total} color="blue" />
@@ -262,8 +220,7 @@ export default function AdminPanel() {
             <StatCard icon={<Trophy />} label="Players" value={stats.players} color="emerald" />
             <StatCard icon={<Users />} label="Scouts" value={stats.scouts} color="green" />
           </div>
-
-          {/* FEEDBACK MESSAGE */}
+          {}
           <AnimatePresence>
             {msg && (
               <motion.div 
@@ -278,24 +235,21 @@ export default function AdminPanel() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* USER TABLE */}
+          {}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="bg-slate-900/80 backdrop-blur-sm rounded-xl border border-white/5 overflow-hidden shadow-2xl"
           >
-
-            {/* Toolbar - Responsive */}
+            {}
             <div className="p-4 sm:p-6 border-b border-white/5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <h2 className="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
                   <LayoutDashboard className="w-5 h-5" /> User Database
                   <span className="text-sm text-slate-500 font-normal">({filteredUsers.length})</span>
                 </h2>
-
-                {/* Search - Full width on mobile */}
+                {}
                 <div className="relative w-full sm:w-80">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
                   <input
@@ -307,8 +261,7 @@ export default function AdminPanel() {
                   />
                 </div>
               </div>
-
-              {/* Filter by Role */}
+              {}
               <div className="flex items-center gap-2 flex-wrap">
                 <Filter className="w-4 h-4 text-slate-400" />
                 <button
@@ -353,7 +306,6 @@ export default function AdminPanel() {
                 </button>
               </div>
             </div>
-
             {/* Table - Desktop View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
@@ -365,7 +317,6 @@ export default function AdminPanel() {
                     <th className="p-5 text-sm font-bold uppercase text-slate-400 text-right">Actions</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {loading ? (
                     <tr>
@@ -405,7 +356,6 @@ export default function AdminPanel() {
                             </div>
                           </div>
                         </td>
-
                         {/* ROLE */}
                         <td className="p-5">
                           <select
@@ -419,7 +369,6 @@ export default function AdminPanel() {
                             <option value="admin">Admin</option>
                           </select>
                         </td>
-
                         {/* STATUS */}
                         <td className="p-5">
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold uppercase rounded-lg">
@@ -427,7 +376,6 @@ export default function AdminPanel() {
                             Active
                           </span>
                         </td>
-
                         {/* DELETE */}
                         <td className="p-5 text-right">
                           <motion.button
@@ -445,7 +393,6 @@ export default function AdminPanel() {
                 </tbody>
               </table>
             </div>
-
             {/* Card View - Mobile */}
             <div className="md:hidden space-y-3 p-4">
               {loading ? (
@@ -488,7 +435,6 @@ export default function AdminPanel() {
                         </motion.button>
                       </div>
                     </div>
-
                     {/* Role & Status */}
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1">
@@ -517,7 +463,6 @@ export default function AdminPanel() {
               )}
             </div>
           </motion.div>
-
           {/* AI RECOMMENDATIONS SECTION - FIXED STYLING */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -527,13 +472,11 @@ export default function AdminPanel() {
           >
             <SportsRecommendations userRole="admin" />
           </motion.div>
-
         </div>
       </div>
     </div>
   );
 }
-
 // Stat Card Component
 function StatCard({ icon, label, value, color }) {
   const colorMap = {
@@ -542,7 +485,6 @@ function StatCard({ icon, label, value, color }) {
     emerald: "from-emerald-500 to-teal-500",
     green: "from-green-500 to-emerald-500",
   };
-
   return (
     <motion.div
       whileHover={{ scale: 1.03, y: -2 }}

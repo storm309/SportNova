@@ -5,10 +5,7 @@ import {
   User, Lock, Mail, ArrowRight, AlertCircle, 
   CheckCircle2, Eye, EyeOff, ShieldCheck, Megaphone, Search 
 } from "lucide-react";
-
 import api from "../api/api";
-
-
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "player", age: "", gender: "" });
@@ -16,15 +13,12 @@ export default function Register() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setMsg("");
     setIsLoading(true);
-
     try {
       const res = await api.post("/auth/register", form);
       if (res.data.token) {
@@ -41,24 +35,21 @@ export default function Register() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-sans relative overflow-hidden selection:bg-blue-500 selection:text-white">
-      
-      {/* --- DYNAMIC SPORTS BACKGROUND --- */}
+      {}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-slate-950" />
-        {/* Stadium Spotlights */}
+        {}
         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[150px] mix-blend-screen" />
-        {/* Speed Lines Pattern */}
+        {}
         <div className="absolute inset-0 opacity-[0.03]" 
              style={{ backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #3b82f6 10px, #3b82f6 11px)` }} 
         />
       </div>
-
       <div className="relative z-10 w-full max-w-md px-6">
-        {/* --- LOGO --- */}
+        {}
         <div className="flex justify-center mb-8">
           <img 
             src="/logo.png" 
@@ -66,23 +57,18 @@ export default function Register() {
             className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" 
           />
         </div>
-
-        {/* --- FORM CONTAINER --- */}
+        {}
         <div className="bg-slate-900/80 backdrop-blur-xl p-8 rounded-sm border border-white/10 shadow-2xl relative group">
-          
-          {/* Decorative Border Glow */}
+          {}
           <div className="absolute -inset-[1px] bg-gradient-to-r from-blue-500 to-transparent opacity-20 group-hover:opacity-40 transition-opacity rounded-sm pointer-events-none" />
-
           <div className="text-center mb-8 relative">
             <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-2">
               Join The <span className="text-blue-500">Squad</span>
             </h2>
             <p className="text-slate-400 text-sm font-medium">Create your athlete profile.</p>
           </div>
-
           <form className="space-y-5 relative" onSubmit={handleSubmit}>
-            
-            {/* Name Input */}
+            {}
             <div className="space-y-1">
               <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Full Name</label>
               <div className="relative group/input">
@@ -100,8 +86,7 @@ export default function Register() {
                 />
               </div>
             </div>
-
-            {/* Email Input */}
+            {}
             <div className="space-y-1">
               <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Email</label>
               <div className="relative group/input">
@@ -119,8 +104,7 @@ export default function Register() {
                 />
               </div>
             </div>
-
-            {/* Password Input */}
+            {}
             <div className="space-y-1">
               <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Password</label>
               <div className="relative group/input">
@@ -141,10 +125,9 @@ export default function Register() {
                 </button>
               </div>
             </div>
-
-            {/* Age and Gender Row */}
+            {}
             <div className="grid grid-cols-2 gap-4">
-              {/* Age Input */}
+              {}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Age</label>
                 <input 
@@ -158,8 +141,7 @@ export default function Register() {
                   onChange={handleChange} 
                 />
               </div>
-
-              {/* Gender Select */}
+              {}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-blue-400 uppercase tracking-widest ml-1">Gender</label>
                 <select 
@@ -175,8 +157,7 @@ export default function Register() {
                 </select>
               </div>
             </div>
-
-            {/* Role Selection */}
+            {}
             <div className="space-y-2 pt-2">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Select Role</label>
               <div className="grid grid-cols-2 gap-3">
@@ -214,8 +195,7 @@ export default function Register() {
                 </label>
               </div>
             </div>
-
-            {/* Submit Button (Skewed Style) */}
+            {}
             <button 
               type="submit" 
               disabled={isLoading} 
@@ -230,8 +210,7 @@ export default function Register() {
               </div>
             </button>
           </form>
-
-          {/* Feedback Messages */}
+          {}
           {error && (
             <div className="mt-6 p-3 bg-red-500/10 border-l-4 border-red-500 flex items-start gap-3 text-red-400 text-sm font-medium animate-pulse">
               <AlertCircle className="w-5 h-5 shrink-0" /><span>{error}</span>
@@ -242,8 +221,7 @@ export default function Register() {
               <CheckCircle2 className="w-5 h-5 shrink-0" /><span>{msg}</span>
             </div>
           )}
-
-          {/* Footer Links */}
+          {}
           <div className="mt-8 text-center pt-6 border-t border-white/5">
             <p className="text-slate-400 text-sm font-medium">
               Already have an account? <Link to="/login" className="text-blue-400 hover:text-white transition-colors font-bold uppercase italic tracking-wider ml-1 hover:underline decoration-blue-500 underline-offset-4">Sign In</Link>

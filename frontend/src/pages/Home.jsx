@@ -8,12 +8,9 @@ import {
   Sparkles, TrendingUp, Award, Phone, PlayCircle,
   Trophy, Activity, Target, Zap, Eye, Globe, Lock, CheckCircle
 } from "lucide-react";
-
 import api from "../api/api";
-
 const LegalModal = ({ title, content, isOpen, onClose }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
@@ -34,14 +31,12 @@ const LegalModal = ({ title, content, isOpen, onClose }) => {
     </div>
   );
 };
-
 export default function Home() {
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -56,13 +51,11 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   const logoutUser = () => {
     localStorage.clear();
     setUser(null);
     window.location.href = "/login";
   };
-
   const openModal = (type) => {
     if (type === "privacy") {
       setModalContent({
@@ -82,26 +75,21 @@ export default function Home() {
     }
     setModalOpen(true);
   };
-
   const navigateHome = () => (window.location.href = "/");
-
   return (
     <div className="bg-slate-950 text-white overflow-x-hidden relative font-sans">
       <LegalModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={modalContent.title} content={modalContent.content} />
-      
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-slate-950" />
         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-blue-600/20 blur-[150px] rounded-full" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-orange-500/20 blur-[150px] rounded-full" />
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, #3b82f6 10px, #3b82f6 11px)" }} />
       </div>
-
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrollY > 50 ? "bg-slate-950/90 border-b border-white/10 backdrop-blur-xl shadow-lg" : "bg-transparent pt-4"}`}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer" onClick={navigateHome}>
             <img src="/logo.png" alt="SportNova Logo" className="h-12 w-auto hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
           </div>
-
           <nav className="hidden md:flex items-center gap-8 text-sm uppercase font-bold tracking-wide italic">
             <Link to="/about" className="text-slate-400 hover:text-white transition-colors relative group">
               About
@@ -115,7 +103,6 @@ export default function Home() {
               Contact
               <span className="absolute -bottom-1 left-0 w-0 h-1 bg-blue-600 skew-x-[-20deg] group-hover:w-full transition-all duration-300" />
             </Link>
-
             {user ? (
               <>
                 <a href={user.role === "coach" ? "/coach" : user.role === "admin" ? "/admin" : user.role === "scout" ? "/scout" : "/dashboard"} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-sm skew-x-[-10deg] flex items-center gap-2">
@@ -134,13 +121,11 @@ export default function Home() {
               </div>
             )}
           </nav>
-
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-white">
             {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
           </button>
         </div>
       </header>
-
       <div className={`fixed top-[80px] left-0 right-0 z-40 md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 transition-all duration-300 ${isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
         <div className="p-6 space-y-4 font-bold uppercase italic">
           <Link to="/about" className="block text-slate-300 hover:text-white py-3 border-b border-white/5" onClick={() => setIsMenuOpen(false)}>About</Link>
@@ -158,7 +143,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       <HeroSection />
       <AboutSection />
       <FeaturesSection />
@@ -167,7 +151,6 @@ export default function Home() {
     </div>
   );
 }
-
 function HeroSection() {
   return (
     <section className="relative z-10 pt-48 pb-32 px-6 overflow-hidden text-center">
@@ -176,16 +159,13 @@ function HeroSection() {
           <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
           <span className="text-sm text-blue-300 font-bold uppercase tracking-widest">Talent Unleashed</span>
         </motion.div>
-
         <motion.h1 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="text-7xl md:text-8xl font-black italic uppercase leading-[0.9] mb-8">
           DOMINATE <br />
           <span className="bg-gradient-to-r from-blue-500 via-cyan-400 to-white text-transparent bg-clip-text animate-gradient">THE GAME</span>
         </motion.h1>
-
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="max-w-2xl mx-auto text-slate-400 text-xl font-medium leading-relaxed">
           <span className="text-white font-bold">SportNova</span> connects raw talent with world-class opportunities. Upload your highlights, get AI analysis, and get scouted.
         </motion.p>
-
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="mt-12 flex flex-col sm:flex-row justify-center gap-6">
           <motion.a href="/register" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="group bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-4 rounded-lg shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_50px_rgba(59,130,246,0.5)] transition-all">
             <span className="flex items-center justify-center gap-3 font-black uppercase tracking-wide">Start Career <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
@@ -194,7 +174,6 @@ function HeroSection() {
             <span className="flex items-center justify-center gap-3 font-bold uppercase tracking-wide"><PlayCircle className="w-5 h-5" /> How It Works</span>
           </motion.a>
         </motion.div>
-
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.8 }} className="mt-24 bg-gradient-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-xl border border-white/10 py-12 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.1)]">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto px-6">
             <StatCard number="10k+" label="Athletes" icon={<Users className="w-6 h-6 text-blue-500" />} delay={0.9} />
@@ -207,7 +186,6 @@ function HeroSection() {
     </section>
   );
 }
-
 function AboutSection() {
   return (
     <section id="about" className="py-24 px-6 bg-gradient-to-b from-slate-900/30 to-transparent border-y border-white/5">
@@ -217,7 +195,6 @@ function AboutSection() {
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">We're revolutionizing athletic talent discovery with cutting-edge technology and data-driven insights.</p>
           <motion.div initial={{ width: 0 }} whileInView={{ width: 96 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.8, delay: 0.3 }} className="h-1 bg-gradient-to-r from-blue-600 to-cyan-500 mx-auto mt-4 rounded-full" />
         </motion.div>
-
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6 }} className="space-y-8">
             <FeatureRow icon={<Video />} title="Upload Performance Videos" text="Showcase your best moments with seamless video uploads. Support for all major formats with automatic optimization." delay={0.1} />
@@ -231,7 +208,6 @@ function AboutSection() {
     </section>
   );
 }
-
 function FeaturesSection() {
   return (
     <section id="features" className="py-24 px-6">
@@ -252,7 +228,6 @@ function FeaturesSection() {
     </section>
   );
 }
-
 function ContactSection() {
   return (
     <section id="contact" className="py-24 px-6 bg-gradient-to-b from-transparent to-slate-900/30">
@@ -261,7 +236,6 @@ function ContactSection() {
           <h2 className="text-5xl font-black italic uppercase mb-4">Get in <span className="bg-gradient-to-r from-blue-500 to-cyan-500 text-transparent bg-clip-text">Touch</span></h2>
           <p className="text-slate-400 text-lg">We're here to help you reach your athletic potential.</p>
         </motion.div>
-
         <div className="grid md:grid-cols-2 gap-8">
           <motion.a href="mailto:shivamkumarp447@gmail.com" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: 0.2 }} whileHover={{ scale: 1.02, translateY: -5 }} className="group bg-gradient-to-br from-slate-900 to-slate-800 p-8 border border-blue-500/20 rounded-lg hover:border-blue-500/50 transition-all shadow-lg hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]">
             <div className="flex items-center gap-4 mb-4">
@@ -276,7 +250,6 @@ function ContactSection() {
             <p className="text-slate-300 mb-2 font-medium">shivamkumarp447@gmail.com</p>
             <span className="text-blue-400 text-sm font-bold uppercase group-hover:underline flex items-center gap-2">Send Message <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
           </motion.a>
-
           <motion.a href="tel:+918252980774" initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: 0.3 }} whileHover={{ scale: 1.02, translateY: -5 }} className="group bg-gradient-to-br from-slate-900 to-slate-800 p-8 border border-green-500/20 rounded-lg hover:border-green-500/50 transition-all shadow-lg hover:shadow-[0_0_30px_rgba(34,197,94,0.2)]">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-14 h-14 bg-green-500/20 rounded-lg flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
@@ -291,7 +264,6 @@ function ContactSection() {
             <span className="text-green-400 text-sm font-bold uppercase group-hover:underline flex items-center gap-2">Call Now <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
           </motion.a>
         </div>
-
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: 0.4 }} className="mt-12 text-center bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-lg p-8">
           <h3 className="text-xl font-bold mb-4 text-white">Need Help Getting Started?</h3>
           <p className="text-slate-400 mb-6 max-w-2xl mx-auto">Our team is available to answer questions, provide platform demos, and help you maximize your athletic profile. Whether you're an athlete, coach, or scout, we're here to support your journey.</p>
@@ -305,7 +277,6 @@ function ContactSection() {
     </section>
   );
 }
-
 function FooterSection({ openModal }) {
   return (
     <footer className="relative py-16 px-6 border-t border-slate-800 bg-gradient-to-b from-slate-950 to-slate-900">
@@ -323,7 +294,6 @@ function FooterSection({ openModal }) {
               <motion.a href="tel:+918252980774" whileHover={{ scale: 1.1, y: -2 }} className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"><Phone className="w-5 h-5" /></motion.a>
             </div>
           </div>
-
           <div>
             <h4 className="text-white font-bold uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-blue-500">|</span> Quick Links</h4>
             <ul className="space-y-3">
@@ -333,7 +303,6 @@ function FooterSection({ openModal }) {
               <li><a href="/register" className="text-slate-400 hover:text-blue-400 transition-colors">Get Started</a></li>
             </ul>
           </div>
-
           <div>
             <h4 className="text-white font-bold uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-blue-500">|</span> Legal</h4>
             <ul className="space-y-3">
@@ -344,7 +313,6 @@ function FooterSection({ openModal }) {
             </ul>
           </div>
         </div>
-
         <div className="border-t border-slate-800 pt-8 mb-8">
           <div className="flex flex-wrap justify-center gap-8 text-slate-500 text-sm">
             <div className="flex items-center gap-2"><Lock className="w-4 h-4 text-green-500" /><span>Secure Platform</span></div>
@@ -353,7 +321,6 @@ function FooterSection({ openModal }) {
             <div className="flex items-center gap-2"><Award className="w-4 h-4 text-yellow-500" /><span>#1 Talent Platform</span></div>
           </div>
         </div>
-
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2 text-slate-500 text-sm">
             <span>© {new Date().getFullYear()} SportNova Inc.</span>
@@ -367,7 +334,6 @@ function FooterSection({ openModal }) {
     </footer>
   );
 }
-
 function StatCard({ number, label, icon, delay = 0 }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay }} whileHover={{ scale: 1.05, y: -5 }} className="group text-center flex flex-col items-center cursor-pointer relative">
@@ -378,7 +344,6 @@ function StatCard({ number, label, icon, delay = 0 }) {
     </motion.div>
   );
 }
-
 function FeatureRow({ icon, title, text, delay = 0 }) {
   return (
     <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay }} className="flex gap-4 items-start group">
@@ -392,7 +357,6 @@ function FeatureRow({ icon, title, text, delay = 0 }) {
     </motion.div>
   );
 }
-
 function PerformanceGraph() {
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.8 }} className="relative">
@@ -413,7 +377,6 @@ function PerformanceGraph() {
     </motion.div>
   );
 }
-
 function FeatureCard({ icon, title, desc, color, delay = 0 }) {
   const colorMap = {
     blue: { text: "text-blue-400", bg: "bg-blue-500/20", border: "border-blue-500/50", shadow: "hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]" },
@@ -424,7 +387,6 @@ function FeatureCard({ icon, title, desc, color, delay = 0 }) {
     cyan: { text: "text-cyan-400", bg: "bg-cyan-500/20", border: "border-cyan-500/50", shadow: "hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]" },
   };
   const colors = colorMap[color];
-
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay }} whileHover={{ y: -8, scale: 1.02 }} className={`group bg-slate-900/60 backdrop-blur-sm p-8 rounded-xl border ${colors.border} border-opacity-20 hover:border-opacity-100 transition-all ${colors.shadow}`}>
       <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className={`${colors.bg} w-16 h-16 rounded-lg flex items-center justify-center mb-6 transition-all`}>

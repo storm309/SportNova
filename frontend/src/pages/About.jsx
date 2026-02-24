@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Video, TrendingUp, Award, Globe, BarChart3, ArrowLeft } from "lucide-react";
-
 const FeatureRow = ({ icon, title, text, delay = 0 }) => {
   return (
     <motion.div 
@@ -24,7 +23,6 @@ const FeatureRow = ({ icon, title, text, delay = 0 }) => {
     </motion.div>
   );
 };
-
 const PerformanceGraph = () => {
   return (
     <motion.div 
@@ -34,7 +32,6 @@ const PerformanceGraph = () => {
       className="relative"
     >
       <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 opacity-20 blur-3xl rounded-full" />
-      
       <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-8 border border-white/10 shadow-2xl backdrop-blur-sm">
         <div className="flex justify-between items-end h-48 gap-3 mb-6">
           {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
@@ -62,11 +59,10 @@ const PerformanceGraph = () => {
     </motion.div>
   );
 };
-
 export default function About() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Back Button */}
+      {}
       <div className="max-w-6xl mx-auto px-6 pt-6">
         <Link to="/">
           <motion.button
@@ -82,8 +78,7 @@ export default function About() {
           </motion.button>
         </Link>
       </div>
-
-      {/* Main Content */}
+      {}
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div 
@@ -105,7 +100,6 @@ export default function About() {
               className="h-1 bg-gradient-to-r from-blue-600 to-cyan-500 mx-auto mt-4 rounded-full" 
             />
           </motion.div>
-
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div 
               initial={{ opacity: 0, x: -50 }}
@@ -138,11 +132,9 @@ export default function About() {
                 delay={0.8}
               />
             </motion.div>
-
             <PerformanceGraph />
           </div>
-
-          {/* Stats Section */}
+          {}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

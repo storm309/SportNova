@@ -7,28 +7,22 @@ import {
 } from "lucide-react";
 import api from "../api/api";
 import SportsRecommendations from "../components/SportsRecommendations";
-
 export default function ScoutDashboard() {
   const navigate = useNavigate();
-
   const [athletes, setAthletes] = useState([]);
-  const [loading, setLoading] = useState(false); // New: Loading state
+  const [loading, setLoading] = useState(false); 
   const [searchTerm, setSearchTerm] = useState("");
   const [sportFilter, setSportFilter] = useState("");
   const [selectedAthleteId, setSelectedAthleteId] = useState(null); // Renamed for clarity
   const [athletePerformance, setAthletePerformance] = useState([]);
-
   useEffect(() => {
     const loadAthletes = async () => {
       setLoading(true);
       try {
         const res = await api.get("/coach/players");
-        
-        // ✅ FIX: Robust array check
         const athletesArray = Array.isArray(res.data)
           ? res.data
           : res.data?.players || res.data?.data || [];
-
         setAthletes(athletesArray);
       } catch (err) {
         console.error("Error loading athletes:", err);
@@ -37,20 +31,16 @@ export default function ScoutDashboard() {
         setLoading(false);
       }
     };
-
     loadAthletes();
   }, []);
-
   const loadAthletePerformance = async (athleteId) => {
     try {
       setSelectedAthleteId(athleteId);
-      setLoading(true); // Show loading while fetching details
+      setLoading(true); 
       const res = await api.get(`/coach/player/${athleteId}/performance`);
-
       const performanceArray = Array.isArray(res.data)
         ? res.data
         : res.data?.data || [];
-
       setAthletePerformance(performanceArray);
     } catch (err) {
       console.error("Error loading performance:", err);
@@ -59,18 +49,14 @@ export default function ScoutDashboard() {
       setLoading(false);
     }
   };
-
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
-
-  // ✅ NEW: Find the full object of the selected athlete to show details
   const currentAthlete = useMemo(() => {
     return athletes.find(a => a._id === selectedAthleteId);
   }, [athletes, selectedAthleteId]);
-
   const filteredAthletes = useMemo(() => {
     if (!Array.isArray(athletes)) return [];
     return athletes.filter((a) => {
@@ -79,13 +65,10 @@ export default function ScoutDashboard() {
       return matchesSearch && matchesSport;
     });
   }, [searchTerm, sportFilter, athletes]);
-
-  // Helper to calculate average score
   const getAverageScore = (perf) => Math.round((perf.speed + perf.stamina + perf.strength) / 3);
-
   return (
     <div className="min-h-screen bg-slate-950 text-white p-4 lg:p-6 font-sans">
-      {/* HEADER */}
+      {}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,7 +78,6 @@ export default function ScoutDashboard() {
           <Activity className="text-green-500" />
           Sport<span className="text-green-500">Nova</span> Scout
         </h1>
-
         <motion.button
           onClick={logout}
           whileHover={{ scale: 1.05 }}
@@ -105,11 +87,9 @@ export default function ScoutDashboard() {
           <LogOut className="w-4 h-4" /> Logout
         </motion.button>
       </motion.div>
-
-      {/* MAIN GRID */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
-        
-        {/* LEFT PANEL: SEARCH & LIST (3 Cols) */}
+        {}
         <motion.div 
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -129,7 +109,6 @@ export default function ScoutDashboard() {
               />
               <Users className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
             </div>
-
             <select
               className="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 focus:border-green-500 focus:outline-none text-sm"
               value={sportFilter}
@@ -142,7 +121,6 @@ export default function ScoutDashboard() {
               <option value="athletics">Athletics</option>
             </select>
           </div>
-
           <div className="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
             {filteredAthletes.map((athlete, index) => (
               <motion.div
@@ -177,8 +155,7 @@ export default function ScoutDashboard() {
             )}
           </div>
         </motion.div>
-
-        {/* MIDDLE PANEL: DETAILED VIEW (6 Cols) */}
+        {}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,7 +169,7 @@ export default function ScoutDashboard() {
             </div>
           ) : (
             <>
-              {/* Profile Header */}
+              {}
               <div className="flex items-start justify-between mb-8 border-b border-white/10 pb-6">
                 <div>
                   <h2 className="text-3xl font-black uppercase text-white mb-1">
@@ -219,13 +196,11 @@ export default function ScoutDashboard() {
                   <div className="text-xl font-bold">{currentAthlete.age || "N/A"}</div>
                 </div>
               </div>
-
-              {/* Performance Section */}
+              {}
               <div className="space-y-4">
                 <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
                   <BarChart2 className="text-green-500" /> Performance History
                 </h3>
-
                 {loading ? (
                   <div className="flex justify-center py-10">
                     <Loader2 className="w-8 h-8 animate-spin text-green-500" />
@@ -258,8 +233,7 @@ export default function ScoutDashboard() {
                              </div>
                           </div>
                         </div>
-
-                        {/* Progress Bars for Stats */}
+                        {}
                         <div className="space-y-3">
                           {[
                             { label: "Speed", value: perf.speed, color: "bg-blue-500" },
@@ -290,15 +264,14 @@ export default function ScoutDashboard() {
             </>
           )}
         </motion.div>
-
-        {/* RIGHT PANEL: SUMMARY & STATS (3 Cols) */}
+        {}
         <motion.div 
            initial={{ opacity: 0, x: 30 }}
            animate={{ opacity: 1, x: 0 }}
            transition={{ delay: 0.3 }}
            className="lg:col-span-3 space-y-4"
         >
-          {/* Quick Stats Card */}
+          {}
           <div className="bg-slate-900/80 p-5 rounded-xl border border-white/10">
             <h3 className="text-sm font-bold uppercase text-slate-400 mb-4">Dashboard Stats</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -312,8 +285,7 @@ export default function ScoutDashboard() {
                </div>
             </div>
           </div>
-
-          {/* Contextual Action / Info */}
+          {}
           <div className="bg-gradient-to-br from-green-900/40 to-slate-900 p-5 rounded-xl border border-green-500/20">
             <h4 className="font-bold text-green-400 mb-2 flex items-center gap-2">
               <Trophy className="w-4 h-4" /> Scouting Tip
@@ -324,8 +296,7 @@ export default function ScoutDashboard() {
             </p>
           </div>
         </motion.div>
-
-        {/* BOTTOM SECTION: RECOMMENDATIONS */}
+        {}
         <div className="lg:col-span-12 mt-4">
           <SportsRecommendations userRole="scout" />
         </div>

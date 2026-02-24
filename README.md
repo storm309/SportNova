@@ -106,9 +106,3 @@ The application will be available at `http://localhost:5173`.
 - [ ] Add comprehensive Unit and Integration Testing (Jest/Cypress)
 - [ ] Implement WebSockets for real-time chat
 
----
-
-## 👨‍💻 Author
-
-**Shivam Kumar Pandey**  
-*Full Stack Developer*

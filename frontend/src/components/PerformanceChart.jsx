@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Activity } from "lucide-react";
-
 export default function PerformanceChart({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -20,8 +19,6 @@ export default function PerformanceChart({ data }) {
       </div>
     );
   }
-
-  // Convert createdAt to nice label and ensure chronological order
   const chartData = [...data]
     .map((p) => ({
       name: new Date(p.createdAt || p._id?.toString().slice(0, 8)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
@@ -30,9 +27,7 @@ export default function PerformanceChart({ data }) {
       stamina: p.stamina,
       strength: p.strength,
     }))
-    .reverse(); // oldest → newest
-
-  // Custom Tooltip for the Tactical Look
+    .reverse(); 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -50,10 +45,9 @@ export default function PerformanceChart({ data }) {
     }
     return null;
   };
-
   return (
     <div className="bg-slate-900/80 backdrop-blur-xl p-6 rounded-sm border border-white/5 shadow-2xl h-96 flex flex-col relative overflow-hidden">
-      {/* Decorative Header */}
+      {}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-black italic uppercase text-white flex items-center gap-2">
           <Activity className="w-5 h-5 text-blue-500" />
@@ -63,8 +57,7 @@ export default function PerformanceChart({ data }) {
           Live Analysis
         </div>
       </div>
-
-      {/* Chart Container */}
+      {}
       <div className="flex-1 w-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
@@ -88,12 +81,11 @@ export default function PerformanceChart({ data }) {
               iconType="rect" 
               wrapperStyle={{ paddingTop: '20px', fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '1px' }} 
             />
-            
             <Line 
               type="monotone" 
               dataKey="speed" 
               name="Speed"
-              stroke="#eab308" /* yellow-500 */
+              stroke="#eab308" 
               strokeWidth={2} 
               dot={{ r: 3, fill: '#eab308', strokeWidth: 0 }}
               activeDot={{ r: 5, stroke: '#eab308', strokeWidth: 2, fill: '#0f172a' }}
@@ -102,7 +94,7 @@ export default function PerformanceChart({ data }) {
               type="monotone" 
               dataKey="stamina" 
               name="Stamina"
-              stroke="#3b82f6" /* blue-500 */
+              stroke="#3b82f6" 
               strokeWidth={2} 
               dot={{ r: 3, fill: '#3b82f6', strokeWidth: 0 }}
               activeDot={{ r: 5, stroke: '#3b82f6', strokeWidth: 2, fill: '#0f172a' }}
@@ -111,7 +103,7 @@ export default function PerformanceChart({ data }) {
               type="monotone" 
               dataKey="strength" 
               name="Strength"
-              stroke="#a855f7" /* purple-500 */
+              stroke="#a855f7" 
               strokeWidth={2} 
               dot={{ r: 3, fill: '#a855f7', strokeWidth: 0 }}
               activeDot={{ r: 5, stroke: '#a855f7', strokeWidth: 2, fill: '#0f172a' }}

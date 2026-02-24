@@ -8,40 +8,31 @@ import {
 } from "lucide-react";
 import api from "../api/api";
 import jsPDF from "jspdf";
-
 const SportsRecommendations = ({ userRole = "player" }) => {
   const [activeTab, setActiveTab] = useState("Cricket");
   const [recommendations, setRecommendations] = useState([]);
-  
-  // --- States for Search & Chat Mode ---
   const [searchQuery, setSearchQuery] = useState("");
   const [currentSearchQuery, setCurrentSearchQuery] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(false); // Determines if we show Chat UI or Card UI
-  
   const [chatHistory, setChatHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState("");
   const [loadedCount, setLoadedCount] = useState(5);
-
   const sports = [
     "Cricket", "Football", "Basketball", "Tennis", 
     "Badminton", "Hockey", "Volleyball", "Swimming"
   ];
-
-  // Colors for "Drill" Categories
   const categoryColors = {
     Technique: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     Fitness: "bg-green-500/10 text-green-400 border-green-500/20",
     Mental: "bg-purple-500/10 text-purple-400 border-purple-500/20",
     Strategy: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
     Nutrition: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-    Insight: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", // New for Search
-    Fact: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20", // New for Search
+    Insight: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", 
+    Fact: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20", 
   };
-
   const categoryIcons = {
     Technique: <Activity className="w-4 h-4" />,
     Fitness: <Dumbbell className="w-4 h-4" />,
@@ -51,7 +42,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
     Insight: <Lightbulb className="w-4 h-4" />,
     Fact: <Sparkles className="w-4 h-4" />,
   };
-
   const roleInfo = {
     player: {
       title: "AI Sports Companion",
@@ -74,47 +64,37 @@ const SportsRecommendations = ({ userRole = "player" }) => {
       icon: <Activity className="w-6 h-6 text-blue-500" />
     }
   };
-
   const currentRoleInfo = roleInfo[userRole] || roleInfo.player;
-
-  // --- 1. Load History on Mount ---
   useEffect(() => {
     const savedHistory = localStorage.getItem('aiSportsHistory');
     if (savedHistory) {
       setChatHistory(JSON.parse(savedHistory));
     }
   }, []);
-
-  // --- 2. Save History Helper ---
   const saveToHistory = (query, results, mode) => {
     const newEntry = {
       id: Date.now(),
       query: query,
       results: results,
-      mode: mode, // 'search' or 'training'
+      mode: mode, 
       timestamp: new Date().toISOString()
     };
     const updatedHistory = [newEntry, ...chatHistory].slice(0, 20);
     setChatHistory(updatedHistory);
     localStorage.setItem('aiSportsHistory', JSON.stringify(updatedHistory));
   };
-
   const clearHistory = () => {
     setChatHistory([]);
     localStorage.removeItem('aiSportsHistory');
   };
-
-  // --- 3. SEARCH Handler (Questions) ---
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
     setSearchLoading(true);
     setError("");
     setCurrentSearchQuery(searchQuery);
     setIsSearchMode(true); // Switch to Chat UI
     setActiveTab(""); // Clear active tab
-
     try {
       // Sending 'type: search' to tell backend this is a Question
       const res = await api.post("/recommendations/generate", {
@@ -122,7 +102,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
         count: 5,
         type: "search" 
       });
-      
       if (res.data.recommendations) {
         setRecommendations(res.data.recommendations);
         saveToHistory(searchQuery, res.data.recommendations, 'search');
@@ -134,19 +113,15 @@ const SportsRecommendations = ({ userRole = "player" }) => {
       setSearchLoading(false);
     }
   };
-
-  // --- 4. TABS Handler (Drills) ---
   const fetchRecommendations = async (sport, count = 5) => {
     setLoading(true);
     setError("");
-    
     try {
       // Default type is 'training' in backend
       const res = await api.post("/recommendations/generate", {
         sport,
         count
       });
-      
       if (res.data.recommendations) {
         setRecommendations(res.data.recommendations);
         setLoadedCount(count);
@@ -157,7 +132,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
       setLoading(false);
     }
   };
-
   const handleTabClick = (sport) => {
     setActiveTab(sport);
     setSearchQuery("");
@@ -166,14 +140,12 @@ const SportsRecommendations = ({ userRole = "player" }) => {
     setRecommendations([]); 
     fetchRecommendations(sport, 5);
   };
-
   // --- 5. Load From History ---
   const loadFromHistory = (item) => {
     setSearchQuery(item.query);
     setCurrentSearchQuery(item.query);
     setRecommendations(item.results);
     setIsSearchMode(item.mode === 'search'); // Restore correct UI mode
-    
     if (item.mode !== 'search') {
         setActiveTab(item.query); // Highlight tab if it was a tab click
     } else {
@@ -181,7 +153,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
     }
     setShowHistory(false);
   };
-
   // --- 6. PDF Download ---
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -189,49 +160,37 @@ const SportsRecommendations = ({ userRole = "player" }) => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const maxLineWidth = pageWidth - margin * 2;
     let y = 20;
-
     // Header
     doc.setFontSize(18);
     doc.setTextColor(40, 40, 40);
     doc.text(isSearchMode ? "AI Sports Insight" : "Sports Training Plan", margin, y);
     y += 10;
-
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
     y += 10;
-    
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
     doc.text(isSearchMode ? `Question: "${currentSearchQuery}"` : `Sport: ${activeTab}`, margin, y);
     y += 15;
-
-    // Content
     doc.setFontSize(11);
     recommendations.forEach((rec, index) => {
       if (y > 270) { doc.addPage(); y = 20; }
-
-      // Title Style
       doc.setFont(undefined, 'bold');
       const titlePrefix = isSearchMode ? "• " : `${index + 1}. `;
       doc.text(`${titlePrefix}${rec.title}`, margin, y);
       y += 7;
-
-      // Description Style
       doc.setFont(undefined, 'normal');
       const lines = doc.splitTextToSize(rec.description, maxLineWidth);
       doc.text(lines, margin, y);
       y += (lines.length * 6) + 10; 
     });
-
     const fileName = isSearchMode ? "AI_Answer.pdf" : "Training_Plan.pdf";
     doc.save(`${fileName}_${Date.now()}.pdf`);
   };
-
   return (
     <div className="w-full text-white">
-      
-      {/* --- HEADER --- */}
+      {}
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
@@ -243,8 +202,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                     {currentRoleInfo.subtitle}
                 </p>
             </div>
-            
-            {/* Buttons */}
+            {}
             <div className="flex gap-2">
                  <button
                     onClick={() => setShowHistory(!showHistory)}
@@ -265,8 +223,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                 </button>
             </div>
         </div>
-
-        {/* --- SEARCH BAR --- */}
+        {}
         <form onSubmit={handleSearch} className="relative mb-4">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
             <input
@@ -285,8 +242,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                 <span className="hidden sm:inline">Ask AI</span>
             </button>
         </form>
-
-        {/* --- HISTORY DROPDOWN --- */}
+        {}
         <AnimatePresence>
             {showHistory && (
                 <motion.div
@@ -338,8 +294,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
             )}
         </AnimatePresence>
       </div>
-
-      {/* --- SPORT TABS --- */}
+      {}
       <div className="flex flex-wrap gap-2 mb-6">
         {sports.map((sport) => (
           <button
@@ -355,11 +310,9 @@ const SportsRecommendations = ({ userRole = "player" }) => {
           </button>
         ))}
       </div>
-
-      {/* --- RESULTS AREA --- */}
+      {}
       <div className="bg-slate-950/50 rounded-xl border border-slate-800 p-6 min-h-[300px] relative">
-        
-        {/* Title Bar */}
+        {}
         <div className="flex items-center justify-between mb-6 border-b border-slate-800/50 pb-4">
              <h3 className="text-lg font-bold text-slate-200 flex items-center gap-2">
                 {isSearchMode ? (
@@ -376,8 +329,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                 ) : "Ready to assist"}
             </h3>
         </div>
-        
-        {/* Loading State */}
+        {}
         {(loading || searchLoading) && (
           <div className="flex flex-col items-center justify-center py-16 text-slate-500">
             <Loader2 className="w-10 h-10 mb-4 animate-spin text-purple-500" />
@@ -386,28 +338,24 @@ const SportsRecommendations = ({ userRole = "player" }) => {
             </p>
           </div>
         )}
-        
-        {/* Error State */}
+        {}
         {error && (
             <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 mb-4">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <p className="text-sm">{error}</p>
             </div>
         )}
-
-        {/* Empty State */}
+        {}
         {!loading && !searchLoading && recommendations.length === 0 && !error && (
              <div className="flex flex-col items-center justify-center py-12 text-slate-600">
                 <Brain className="w-16 h-16 mb-4 opacity-20" />
                 <p className="text-sm">Select a sport above or ask a question to begin.</p>
             </div>
         )}
-
-        {/* --- CONTENT RENDER LOGIC --- */}
+        {}
         {!loading && !searchLoading && recommendations.length > 0 && (
             <AnimatePresence mode="wait">
-                
-                {/* === VIEW 1: SEARCH / CHAT MODE === */}
+                {}
                 {isSearchMode ? (
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }} 
@@ -422,7 +370,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                                 <div className="space-y-6 w-full">
                                     {recommendations.map((rec, index) => (
                                         <div key={index} className="border-b border-slate-800/50 last:border-0 pb-4 last:pb-0">
-                                            {/* We use the 'title' as a subheading if provided */}
+                                            {}
                                             {rec.title && (
                                                 <h4 className="text-md font-bold text-slate-200 mb-2">
                                                     {rec.title}
@@ -438,8 +386,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                         </div>
                     </motion.div>
                 ) : (
-                
-                /* === VIEW 2: DRILL / TAB MODE === */
                     <motion.div className="space-y-4">
                         {recommendations.map((rec, index) => (
                             <motion.div
@@ -456,7 +402,6 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                                         </span>
                                         {rec.title}
                                     </h3>
-                                    
                                     {rec.category && (
                                         <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                                             categoryColors[rec.category] || "bg-slate-800 text-slate-400 border-slate-700"
@@ -471,8 +416,7 @@ const SportsRecommendations = ({ userRole = "player" }) => {
                                 </p>
                             </motion.div>
                         ))}
-                        
-                        {/* Load More Button (Only active in Drill/Tab Mode) */}
+                        {}
                         <div className="mt-8 text-center border-t border-slate-800 pt-6">
                             <button 
                                 onClick={() => fetchRecommendations(activeTab, loadedCount + 5)} 
@@ -490,5 +434,4 @@ const SportsRecommendations = ({ userRole = "player" }) => {
     </div>
   );
 };
-
 export default SportsRecommendations; 

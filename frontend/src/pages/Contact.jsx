@@ -2,11 +2,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Mail, Phone, ArrowLeft, CheckCircle, Clock, MapPin, Send } from "lucide-react";
-
 export default function Contact() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Back Button */}
+      {}
       <div className="max-w-5xl mx-auto px-6 pt-6">
         <Link to="/">
           <motion.button
@@ -22,8 +21,7 @@ export default function Contact() {
           </motion.button>
         </Link>
       </div>
-
-      {/* Main Content */}
+      {}
       <section className="py-16 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div 
@@ -37,7 +35,6 @@ export default function Contact() {
             </h1>
             <p className="text-slate-400 text-lg">We're here to help you reach your athletic potential.</p>
           </motion.div>
-
           <div className="grid md:grid-cols-2 gap-8">
             <motion.a 
               href="mailto:shivamkumarp447@gmail.com" 
@@ -61,7 +58,6 @@ export default function Contact() {
                 Send Message <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </motion.a>
-
             <motion.a 
               href="tel:+918252980774" 
               initial={{ opacity: 0, x: 30 }}
@@ -85,8 +81,7 @@ export default function Contact() {
               </span>
             </motion.a>
           </div>
-
-          {/* Additional Contact Info */}
+          {}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,8 +108,7 @@ export default function Contact() {
               </div>
             </div>
           </motion.div>
-
-          {/* Business Hours */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -141,7 +135,6 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-
             <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-3">
                 <MapPin className="w-6 h-6 text-green-400" />

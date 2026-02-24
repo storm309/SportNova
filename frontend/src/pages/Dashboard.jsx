@@ -9,29 +9,22 @@ import {
   Award, Target, Sparkles, RefreshCw, Calendar, Clock
 } from "lucide-react";
 import SportsRecommendations from "../components/SportsRecommendations";
-
-// REAL API
 const api = axios.create({
   baseURL: "http://localhost:5000",
 });
-
-// --------------------- CHART - Enhanced ---------------------
 const PerformanceChart = ({ data }) => {
-  // Ensure data is an array
   const chartData = Array.isArray(data) ? data : [];
   const maxValue = chartData.length > 0 
     ? Math.max(...chartData.map(d => Math.max(d.speed || 0, d.strength || 0)), 100)
     : 100;
-
   return (
     <div className="relative h-full w-full flex items-end justify-between gap-2 sm:gap-3 px-2 sm:px-4 pb-2 pt-8">
-      {/* Grid Lines */}
+      {}
       <div className="absolute inset-0 z-0 flex flex-col justify-between px-4 pb-2 opacity-10 pointer-events-none">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="w-full h-px bg-white"></div>
         ))}
       </div>
-
       {chartData.length === 0 ? (
         <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 z-10">
           <BarChart3 className="w-10 h-10 mb-2 opacity-50" />
@@ -40,7 +33,7 @@ const PerformanceChart = ({ data }) => {
       ) : (
         chartData.slice(-10).map((d, i) => (
           <div key={i} className="group relative w-full h-full flex items-end justify-center z-10">
-            {/* Tooltip */}
+            {}
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-700 text-white text-[10px] uppercase font-bold px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 whitespace-nowrap">
               <div className="text-blue-400 mb-1">{d.sport}</div>
               <div className="flex gap-2">
@@ -48,8 +41,7 @@ const PerformanceChart = ({ data }) => {
                 <span>Str: {d.strength || 0}</span>
               </div>
             </div>
-
-            {/* Bars */}
+            {}
             <div className="w-full max-w-[40px] h-[80%] flex items-end gap-[2px]">
               <motion.div 
                 initial={{ height: 0 }}
@@ -70,9 +62,6 @@ const PerformanceChart = ({ data }) => {
     </div>
   );
 };
-
-// --------------------- DASHBOARD ---------------------
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ sport: "", speed: "", stamina: "", strength: "", videoUrl: "" });
@@ -81,64 +70,49 @@ export default function Dashboard() {
   const [msg, setMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   useEffect(() => {
     verifyLogin();
     loadData();
   }, []);
-
   // redirect if not logged in
   const verifyLogin = () => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
   };
-
-  // Load user performances
   const loadData = async () => {
     try {
       const token = localStorage.getItem("token");
-
       const res = await api.get("/performance/my", {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      // Handle both array (old format) and paginated object (new format)
       const performances = Array.isArray(res.data) ? res.data : (res.data.data || []);
       setList(performances);
     } catch (err) {
       console.log(err);
-      setList([]); // Set empty array on error to prevent map errors
+      setList([]); 
     }
   };
-
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMsg("");
-
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (videoFile) fd.append("videoFile", videoFile);
-
       const token = localStorage.getItem("token");
-
       const res = await api.post("/performance/add", fd, {
         headers: { 
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
         }
       });
-
       setMsg("Performance recorded successfully!");
       loadData();
-
       setForm({ sport: "", speed: "", stamina: "", strength: "", videoUrl: "" });
       setVideoFile(null);
-
       setTimeout(() => setMsg(""), 3000);
     } catch (err) {
       console.log(err);
@@ -147,26 +121,19 @@ export default function Dashboard() {
       setIsSubmitting(false);
     }
   };
-
   const logout = () => {
     localStorage.clear();
     navigate("/login");
   };
-
-  // Calculate stats
   const stats = {
     total: Array.isArray(list) ? list.length : 0,
     avgSpeed: Array.isArray(list) && list.length > 0 ? Math.round(list.reduce((sum, p) => sum + (p.speed || 0), 0) / list.length) : 0,
     avgStamina: Array.isArray(list) && list.length > 0 ? Math.round(list.reduce((sum, p) => sum + (p.stamina || 0), 0) / list.length) : 0,
     avgStrength: Array.isArray(list) && list.length > 0 ? Math.round(list.reduce((sum, p) => sum + (p.strength || 0), 0) / list.length) : 0,
   };
-
-  // --------------------- UI ---------------------
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white pb-12">
-
-      {/* HEADER - Sticky */}
+      {}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -175,8 +142,7 @@ export default function Dashboard() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex justify-between items-center">
-            
-            {/* Logo */}
+            {}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
                 <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
@@ -188,8 +154,7 @@ export default function Dashboard() {
                 <p className="text-[10px] text-slate-500 hidden sm:block">Performance Dashboard</p>
               </div>
             </div>
-
-            {/* Desktop Actions */}
+            {}
             <div className="hidden md:flex items-center gap-3">
               <a 
                 href="mailto:shivam@gmail.com" 
@@ -197,7 +162,6 @@ export default function Dashboard() {
               >
                 <HelpCircle className="w-4 h-4" /> Support
               </a>
-              
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -207,7 +171,6 @@ export default function Dashboard() {
               >
                 <RefreshCw className="w-5 h-5" />
               </motion.button>
-
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -217,8 +180,7 @@ export default function Dashboard() {
                 <LogOut className="w-4 h-4" /> Exit
               </motion.button>
             </div>
-
-            {/* Mobile Menu Button */}
+            {}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
@@ -226,8 +188,7 @@ export default function Dashboard() {
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
-
-          {/* Mobile Menu */}
+          {}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
@@ -267,19 +228,16 @@ export default function Dashboard() {
           </AnimatePresence>
         </div>
       </motion.div>
-
-      {/* MAIN CONTENT */}
+      {}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6 sm:space-y-8">
-
-        {/* Stats Cards - Responsive Grid */}
+        {}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <StatsCard icon={<Trophy />} label="Total Records" value={stats.total} color="blue" />
           <StatsCard icon={<Zap />} label="Avg Speed" value={stats.avgSpeed} color="blue" />
           <StatsCard icon={<Heart />} label="Avg Stamina" value={stats.avgStamina} color="orange" />
           <StatsCard icon={<Dumbbell />} label="Avg Strength" value={stats.avgStrength} color="purple" />
         </div>
-
-        {/* Feedback Message */}
+        {}
         <AnimatePresence>
           {msg && (
             <motion.div 
@@ -298,11 +256,9 @@ export default function Dashboard() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* GRID */}
+        {}
         <div className="grid lg:grid-cols-12 gap-6 sm:gap-8">
-
-          {/* LEFT FORM */}
+          {}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -310,16 +266,13 @@ export default function Dashboard() {
             className="lg:col-span-5"
           >
             <div className="bg-slate-900/80 backdrop-blur-sm p-6 sm:p-8 rounded-xl border border-white/10 sticky top-24">
-
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
                   <Plus className="w-5 h-5 text-blue-400" />
                 </div>
                 <h2 className="text-xl font-black uppercase">New Record</h2>
               </div>
-
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-
                 <div>
                   <label className="text-xs text-slate-400 mb-2 block uppercase tracking-wider">Sport</label>
                   <input 
@@ -331,7 +284,6 @@ export default function Dashboard() {
                     className="w-full p-3 bg-slate-950/50 border border-slate-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
-
                 <div>
                   <label className="text-xs text-slate-400 mb-2 block uppercase tracking-wider">Performance Metrics</label>
                   <div className="grid grid-cols-3 gap-3">
@@ -370,7 +322,6 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <label className="text-xs text-slate-400 mb-2 block uppercase tracking-wider">Video URL (Optional)</label>
                   <div className="relative">
@@ -384,7 +335,6 @@ export default function Dashboard() {
                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   </div>
                 </div>
-
                 <div>
                   <label className="text-xs text-slate-400 mb-2 block uppercase tracking-wider">Upload Video (Optional)</label>
                   <div className="relative">
@@ -401,7 +351,6 @@ export default function Dashboard() {
                     </p>
                   )}
                 </div>
-
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -418,16 +367,12 @@ export default function Dashboard() {
                     </>
                   )}
                 </motion.button>
-
               </form>
             </div>
           </motion.div>
-
-
-          {/* RIGHT CHART & LOGS */}
+          {}
           <div className="lg:col-span-7 space-y-6">
-
-            {/* CHART */}
+            {}
             <motion.div 
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -449,13 +394,11 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-
               <div className="bg-slate-950/50 border border-slate-800 rounded-xl h-[calc(100%-50px)]">
                 <PerformanceChart data={list} />
               </div>
             </motion.div>
-
-            {/* LOGS */}
+            {}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -466,7 +409,6 @@ export default function Dashboard() {
                 <Trophy className="w-5 h-5 text-orange-400" /> Recent Logs
                 <span className="text-sm text-slate-500 font-normal">({list.length})</span>
               </h2>
-
               <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
                 {!Array.isArray(list) || list.length === 0 ? (
                   <div className="text-center py-16 text-slate-500">
@@ -503,8 +445,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
-
-                        {/* Video Links */}
+                        {}
                         {(p.videoUrl || p.videoFile) && (
                           <div className="flex gap-2">
                             {p.videoUrl && (
@@ -536,8 +477,7 @@ export default function Dashboard() {
                           </div>
                         )}
                       </div>
-
-                      {/* Stats Grid */}
+                      {}
                       <div className="grid grid-cols-3 gap-2">
                         <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-lg text-center">
                           <div className="flex items-center justify-center gap-1 mb-1">
@@ -566,12 +506,9 @@ export default function Dashboard() {
                 )}
               </div>
             </motion.div>
-
           </div>
-
         </div>
-
-        {/* AI RECOMMENDATIONS SECTION - FIXED STYLING */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -580,10 +517,8 @@ export default function Dashboard() {
         >
           <SportsRecommendations />
         </motion.div>
-
       </div>
-
-      {/* Custom Scrollbar Styles */}
+      {}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -603,17 +538,13 @@ export default function Dashboard() {
     </div>
   );
 }
-
-// Stats Card Component
 function StatsCard({ icon, label, value, color }) {
   const colorMap = {
     blue: { gradient: "from-blue-500 to-cyan-500", bg: "bg-blue-500/20", border: "border-blue-500/30" },
     orange: { gradient: "from-orange-500 to-red-500", bg: "bg-orange-500/20", border: "border-orange-500/30" },
     purple: { gradient: "from-purple-500 to-pink-500", bg: "bg-purple-500/20", border: "border-purple-500/30" },
   };
-
   const colors = colorMap[color];
-
   return (
     <motion.div
       whileHover={{ scale: 1.03, y: -2 }}

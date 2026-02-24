@@ -5,7 +5,6 @@ import {
   Video, Users, Trophy, Target, Lock, Eye, 
   BarChart3, ArrowLeft, Zap, Shield, Globe 
 } from "lucide-react";
-
 const FeatureCard = ({ icon, title, desc, color, delay = 0 }) => {
   const colorMap = {
     blue: { text: "text-blue-400", bg: "bg-blue-500/20", border: "border-blue-500/50", shadow: "hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]" },
@@ -15,9 +14,7 @@ const FeatureCard = ({ icon, title, desc, color, delay = 0 }) => {
     purple: { text: "text-purple-400", bg: "bg-purple-500/20", border: "border-purple-500/50", shadow: "hover:shadow-[0_0_30px_rgba(168,85,247,0.3)]" },
     cyan: { text: "text-cyan-400", bg: "bg-cyan-500/20", border: "border-cyan-500/50", shadow: "hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]" },
   };
-
   const colors = colorMap[color];
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
@@ -38,11 +35,10 @@ const FeatureCard = ({ icon, title, desc, color, delay = 0 }) => {
     </motion.div>
   );
 };
-
 export default function Features() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Back Button */}
+      {}
       <div className="max-w-7xl mx-auto px-6 pt-6">
         <Link to="/">
           <motion.button
@@ -58,8 +54,7 @@ export default function Features() {
           </motion.button>
         </Link>
       </div>
-
-      {/* Main Content */}
+      {}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -73,7 +68,6 @@ export default function Features() {
             </h1>
             <p className="text-slate-400 text-lg">Powerful tools designed for athletes, coaches, and scouts.</p>
           </motion.div>
-
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard 
               icon={<Video />} 
@@ -118,8 +112,7 @@ export default function Features() {
               delay={0.6}
             />
           </div>
-
-          {/* Additional Features Grid */}
+          {}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
