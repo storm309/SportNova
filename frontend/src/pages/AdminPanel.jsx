@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Users, Shield, Trash2, LogOut, Search, LayoutDashboard, 
+import {
+  Users, Shield, Trash2, LogOut, Search, LayoutDashboard,
   UserCog, Trophy, ChevronDown, AlertCircle, Ban, Menu, X,
   Filter, Download, RefreshCw
 } from "lucide-react";
@@ -31,7 +31,7 @@ export default function AdminPanel() {
       if (res.data.user.role !== "admin") {
         navigate("/dashboard");
       }
-    } catch (err) {
+    } catch {
       navigate("/login");
     }
   };
@@ -54,6 +54,7 @@ export default function AdminPanel() {
   useEffect(() => {
     validateAdmin();
     loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeRole = async (id, role) => {
     try {
@@ -97,21 +98,14 @@ export default function AdminPanel() {
     return matchesSearch && matchesRole;
   }) : [];
   const getRoleColor = (role) => {
-    switch(role) {
+    switch (role) {
       case 'admin': return 'border-purple-500 text-purple-400 bg-purple-500/10';
       case 'coach': return 'border-blue-500 text-blue-400 bg-blue-500/10';
       case 'scout': return 'border-green-500 text-green-400 bg-green-500/10';
       default: return 'border-emerald-500 text-emerald-400 bg-emerald-500/10';
     }
   };
-  const getRoleBadgeColor = (role) => {
-    switch(role) {
-      case 'admin': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-      case 'coach': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-      case 'scout': return 'bg-green-500/20 text-green-300 border-green-500/30';
-      default: return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-    }
-  };
+
   const stats = {
     total: users.length,
     admins: users.filter(u => u.role === 'admin').length,
@@ -121,9 +115,9 @@ export default function AdminPanel() {
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans pb-10">
-      {}
+      { }
       <div className="relative z-10 w-full">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -131,7 +125,7 @@ export default function AdminPanel() {
         >
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
-              {}
+              { }
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
                   <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" />
@@ -148,7 +142,7 @@ export default function AdminPanel() {
                   <span className="text-purple-500">Admin</span>
                 </h1>
               </div>
-              {}
+              { }
               <div className="hidden md:flex items-center gap-3">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -159,25 +153,25 @@ export default function AdminPanel() {
                 >
                   <RefreshCw className="w-5 h-5" />
                 </motion.button>
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={logout} 
+                  onClick={logout}
                   className="border border-red-500/30 text-red-400 px-4 sm:px-6 py-2 rounded-lg hover:bg-red-500 hover:text-white transition-all flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" /> 
+                  <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Logout</span>
                 </motion.button>
               </div>
-              {}
-              <button 
+              { }
+              <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
-            {}
+            { }
             <AnimatePresence>
               {mobileMenuOpen && (
                 <motion.div
@@ -211,7 +205,7 @@ export default function AdminPanel() {
             </AnimatePresence>
           </div>
         </motion.div>
-        {}
+        { }
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
             <StatCard icon={<Users />} label="Total Users" value={stats.total} color="blue" />
@@ -220,36 +214,36 @@ export default function AdminPanel() {
             <StatCard icon={<Trophy />} label="Players" value={stats.players} color="emerald" />
             <StatCard icon={<Users />} label="Scouts" value={stats.scouts} color="green" />
           </div>
-          {}
+          { }
           <AnimatePresence>
             {msg && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
                 className="p-3 sm:p-4 bg-blue-500/10 border-l-4 border-blue-500 text-blue-400 text-sm sm:text-base flex items-center gap-2 rounded-r-lg mb-6"
               >
-                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> 
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                 <span>{msg}</span>
               </motion.div>
             )}
           </AnimatePresence>
-          {}
-          <motion.div 
+          { }
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="bg-slate-900/80 backdrop-blur-sm rounded-xl border border-white/5 overflow-hidden shadow-2xl"
           >
-            {}
+            { }
             <div className="p-4 sm:p-6 border-b border-white/5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <h2 className="text-lg sm:text-xl font-black uppercase flex items-center gap-2">
                   <LayoutDashboard className="w-5 h-5" /> User Database
                   <span className="text-sm text-slate-500 font-normal">({filteredUsers.length})</span>
                 </h2>
-                {}
+                { }
                 <div className="relative w-full sm:w-80">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
                   <input
@@ -261,46 +255,41 @@ export default function AdminPanel() {
                   />
                 </div>
               </div>
-              {}
+              { }
               <div className="flex items-center gap-2 flex-wrap">
                 <Filter className="w-4 h-4 text-slate-400" />
                 <button
                   onClick={() => setFilterRole("")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                    filterRole === "" ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${filterRole === "" ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
                 >
                   All
                 </button>
                 <button
                   onClick={() => setFilterRole("admin")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                    filterRole === "admin" ? "bg-purple-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${filterRole === "admin" ? "bg-purple-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
                 >
                   Admins
                 </button>
                 <button
                   onClick={() => setFilterRole("coach")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                    filterRole === "coach" ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${filterRole === "coach" ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
                 >
                   Coaches
                 </button>
                 <button
                   onClick={() => setFilterRole("player")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                    filterRole === "player" ? "bg-emerald-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${filterRole === "player" ? "bg-emerald-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
                 >
                   Players
                 </button>
                 <button
                   onClick={() => setFilterRole("scout")}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                    filterRole === "scout" ? "bg-green-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${filterRole === "scout" ? "bg-green-500 text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                    }`}
                 >
                   Scouts
                 </button>
@@ -336,7 +325,7 @@ export default function AdminPanel() {
                     </tr>
                   ) : (
                     filteredUsers.map((u, index) => (
-                      <motion.tr 
+                      <motion.tr
                         key={u._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Mail, Lock, ArrowRight, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import api from "../api/api";
+
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState("");
@@ -44,7 +44,6 @@ export default function Login() {
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-sans relative overflow-hidden selection:bg-blue-500 selection:text-white">
-      {}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-slate-950" />
         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[150px]" />
@@ -58,7 +57,6 @@ export default function Login() {
         />
       </div>
       <div className="relative z-10 w-full max-w-md px-6">
-        {}
         <div className="flex justify-center mb-8">
           <img
             src="/logo.png"
@@ -66,7 +64,7 @@ export default function Login() {
             className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300"
           />
         </div>
-        {}
+        { }
         <div className="bg-slate-900/80 p-8 rounded-sm border border-white/10 shadow-2xl relative group">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-2">
@@ -75,7 +73,7 @@ export default function Login() {
             <p className="text-slate-400 text-sm">Access your athlete dashboard.</p>
           </div>
           <div className="space-y-6">
-            {}
+            { }
             <div className="space-y-1">
               <label className="text-xs font-bold text-blue-400 uppercase ml-1">
                 Email
@@ -93,7 +91,7 @@ export default function Login() {
                 />
               </div>
             </div>
-            {}
+            { }
             <div className="space-y-1">
               <label className="text-xs font-bold text-blue-400 uppercase ml-1">
                 Password
@@ -118,7 +116,7 @@ export default function Login() {
                 </button>
               </div>
             </div>
-            {}
+            { }
             <button
               onClick={handleSubmit}
               disabled={isLoading}
@@ -139,19 +137,19 @@ export default function Login() {
               </div>
             </button>
           </div>
-          {}
+          { }
           {error && (
             <div className="mt-6 p-3 bg-red-500/10 border-l-4 border-red-500 flex gap-3 text-red-400 text-sm">
               <AlertCircle size={20} /> {error}
             </div>
           )}
-          {}
+          { }
           {msg && (
             <div className="mt-6 p-3 bg-green-500/10 border-l-4 border-green-500 flex gap-3 text-green-400 text-sm">
               <CheckCircle2 size={20} /> {msg}
             </div>
           )}
-          {}
+          { }
           <div className="mt-8 text-center text-sm text-slate-400">
             Don't have an account?{" "}
             <a

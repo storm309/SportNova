@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -9,9 +8,7 @@ import {
   Award, Target, Sparkles, RefreshCw, Calendar, Clock
 } from "lucide-react";
 import SportsRecommendations from "../components/SportsRecommendations";
-const api = axios.create({
-  baseURL: "http://localhost:5000",
-});
+import api from "../api/api";
 const PerformanceChart = ({ data }) => {
   const chartData = Array.isArray(data) ? data : [];
   const maxValue = chartData.length > 0 
@@ -73,6 +70,7 @@ export default function Dashboard() {
   useEffect(() => {
     verifyLogin();
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // redirect if not logged in
   const verifyLogin = () => {
@@ -103,7 +101,7 @@ export default function Dashboard() {
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (videoFile) fd.append("videoFile", videoFile);
       const token = localStorage.getItem("token");
-      const res = await api.post("/performance/add", fd, {
+      await api.post("/performance/add", fd, {
         headers: { 
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
@@ -465,7 +463,7 @@ export default function Dashboard() {
                               <motion.a
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                href={`http://localhost:5000${p.videoFile}`}
+                                href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"}${p.videoFile}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"

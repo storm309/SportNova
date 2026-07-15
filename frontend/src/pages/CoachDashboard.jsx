@@ -65,14 +65,13 @@ export default function CoachDashboard() {
   const [performance, setPerformance] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [msg, setMsg] = useState("");
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   // Comparison
   const [p1, setP1] = useState("");
   const [p2, setP2] = useState("");
   const [compareData, setCompareData] = useState(null);
-  useEffect(() => { loadPlayers(); }, []);
   const loadPlayers = async () => {
     try {
       const res = await api.get("/coach/players");
@@ -81,11 +80,13 @@ export default function CoachDashboard() {
       setFilteredPlayers(playersData);
     } catch (err) {
       console.log(err);
-      setMsg("Failed to load players.");
       setPlayers([]);
       setFilteredPlayers([]);
     }
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { loadPlayers(); }, []);
+
   const loadPerformance = async (playerId) => {
     try {
       setSelectedPlayer(playerId);
@@ -95,7 +96,6 @@ export default function CoachDashboard() {
       setMobileSidebarOpen(false); 
     } catch (err) {
       console.log(err);
-      setMsg("Could not load performance.");
       setPerformance([]);
     }
   };
@@ -114,6 +114,7 @@ export default function CoachDashboard() {
     navigate("/login");
   };
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilteredPlayers(
       players.filter((p) =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -386,7 +387,7 @@ export default function CoachDashboard() {
                           <motion.a
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            href={`http://localhost:5000${p.videoFile}`}
+                            href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"}${p.videoFile}`}
                             target="_blank"
                             rel="noreferrer"
                             className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"

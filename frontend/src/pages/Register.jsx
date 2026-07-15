@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import { 
   User, Lock, Mail, ArrowRight, AlertCircle, 
   CheckCircle2, Eye, EyeOff, ShieldCheck, Megaphone, Search 

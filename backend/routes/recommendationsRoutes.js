@@ -3,36 +3,55 @@ const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const authMiddleware = require("../middleware/authMiddleware");
 const { asyncHandler } = require("../utils/errorHandler");
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const { buildFallbackRecommendations } = require("../utils/recommendationsFallback");
+
+let genAI = null;
+
+if (process.env.GEMINI_API_KEY) {
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+}
+
 router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
   const { sport, count = 5, type = "training" } = req.body;
   const userRole = req.user.role;
+
   if (!sport || sport.trim().length < 2) {
     return res.status(400).json({ message: "Valid input is required" });
   }
-  if (!process.env.GEMINI_API_KEY) {
-    return res.status(500).json({
-      message: "Gemini API key not configured."
+
+  const isSearchMode = type === "search" || sport.split(" ").length > 3;
+
+  if (!process.env.GEMINI_API_KEY || !genAI) {
+    const fallbackRecommendations = buildFallbackRecommendations(sport, count, userRole, isSearchMode ? "search" : "training");
+    return res.json({
+      sport,
+      recommendations: fallbackRecommendations,
+      count: fallbackRecommendations.length,
+      role: userRole,
+      mode: isSearchMode ? "search" : "training",
+      fallback: true,
+      message: "Gemini API key not configured; using built-in recommendations."
     });
   }
+
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash", 
+    model: "gemini-2.0-flash",
     generationConfig: { responseMimeType: "application/json" }
   });
-  const isSearchMode = type === "search" || sport.split(" ").length > 3;
+
   let prompt;
   if (isSearchMode) {
     prompt = `
       You are an expert sports AI consultant. The user (${userRole}) has asked this specific question or topic: "${sport}".
-      Provide a direct, conversational, and highly accurate answer. 
-      Do NOT generate random drills unless specifically asked. 
+      Provide a direct, conversational, and highly accurate answer.
+      Do NOT generate random drills unless specifically asked.
       Split your answer into logical parts (paragraphs or key points).
       You MUST return a JSON array with this structure:
       [
         {
           "title": "A short heading for this part of the answer",
           "description": "The detailed content/answer text.",
-          "category": "Insight" 
+          "category": "Insight"
         }
       ]
       Keep the "category" as "Insight", "Fact", or "History" based on the content.
@@ -59,12 +78,13 @@ router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
       Ensure recommendations are unique.
     `;
   }
+
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    let recommendations;
-    recommendations = JSON.parse(text);
+    const recommendations = JSON.parse(text);
+
     res.json({
       sport,
       recommendations,
@@ -80,4 +100,5 @@ router.post("/generate", authMiddleware, asyncHandler(async (req, res) => {
     });
   }
 }));
+
 module.exports = router;

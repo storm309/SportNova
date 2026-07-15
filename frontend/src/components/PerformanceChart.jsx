@@ -10,6 +10,24 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Activity } from "lucide-react";
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-950 border border-slate-700 p-3 rounded-sm shadow-xl">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 text-xs font-mono mb-1 last:mb-0">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-slate-300 uppercase font-bold">{entry.name}:</span>
+            <span className="text-white font-bold">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function PerformanceChart({ data }) {
   if (!data || data.length === 0) {
     return (
@@ -28,23 +46,7 @@ export default function PerformanceChart({ data }) {
       strength: p.strength,
     }))
     .reverse(); 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-slate-950 border border-slate-700 p-3 rounded-sm shadow-xl">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{label}</p>
-          {payload.map((entry, index) => (
-            <div key={index} className="flex items-center gap-2 text-xs font-mono mb-1 last:mb-0">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              <span className="text-slate-300 uppercase font-bold">{entry.name}:</span>
-              <span className="text-white font-bold">{entry.value}</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+
   return (
     <div className="bg-slate-900/80 backdrop-blur-xl p-6 rounded-sm border border-white/5 shadow-2xl h-96 flex flex-col relative overflow-hidden">
       {}
