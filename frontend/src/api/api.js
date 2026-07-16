@@ -6,7 +6,21 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // Use Clerk token if available
+    if (window.Clerk && window.Clerk.session) {
+      try {
+        const token = await window.Clerk.session.getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+          return config;
+        }
+      } catch (err) {
+        console.error("Error getting Clerk token:", err);
+      }
+    }
+    
+    // Fallback to localStorage token if Clerk is not active
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

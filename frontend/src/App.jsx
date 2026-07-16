@@ -12,6 +12,7 @@ import ScoutDashboard from "./pages/ScoutDashboard";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Contact from "./pages/Contact";
+import Onboarding from "./pages/Onboarding";
 function ProtectedRoute({ children, roles }) {
   const { user, token, loading } = useAuth();
   if (loading) return <div className="text-white p-10">Loading...</div>;
@@ -49,6 +50,10 @@ export default function App() {
             <Register />
           </PublicRoute>
         }
+      />
+      <Route
+        path="/onboarding"
+        element={<Onboarding />}
       />
       {}
       <Route

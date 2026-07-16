@@ -103,6 +103,10 @@ router.post("/login", asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
+  if (!user.password) {
+    return res.status(400).json({ message: "Please sign in with Google" });
+  }
+
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
     return res.status(400).json({ message: "Invalid credentials" });
@@ -129,6 +133,64 @@ router.post("/login", asyncHandler(async (req, res) => {
     message: "Login successful",
     token,
     user: userResponse,
+  });
+}));
+
+router.post("/sync", authMiddleware, asyncHandler(async (req, res) => {
+  const { email, name, role, age, gender } = req.body;
+  const clerkId = req.user.clerkId; // Attached by authMiddleware
+
+  if (!email || !name) {
+    return res.status(400).json({ message: "Email and Name are required" });
+  }
+
+  // Check if user already exists by clerkId
+  let user = await User.findOne({ clerkId });
+
+  if (!user) {
+    // Maybe they exist by email from the old JWT auth system?
+    user = await User.findOne({ email: email.toLowerCase() });
+    
+    if (user) {
+      // Link the old account to this Clerk ID
+      user.clerkId = clerkId;
+      // Update fields if provided during onboarding
+      if (role) user.role = role;
+      if (age) user.age = parseInt(age);
+      if (gender) user.gender = gender;
+      await user.save();
+    } else {
+      // Create a brand new user
+      user = new User({
+        clerkId,
+        email: email.toLowerCase(),
+        name,
+        role: role || "player",
+        age: age ? parseInt(age) : undefined,
+        gender
+      });
+      await user.save();
+    }
+  } else {
+    // If they already exist, we can optionally update their onboarding fields
+    let updated = false;
+    if (role && user.role !== role) { user.role = role; updated = true; }
+    if (age && user.age !== parseInt(age)) { user.age = parseInt(age); updated = true; }
+    if (gender && user.gender !== gender) { user.gender = gender; updated = true; }
+    if (updated) await user.save();
+  }
+
+  res.status(200).json({
+    message: "User synced successfully",
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      age: user.age,
+      gender: user.gender,
+      createdAt: user.createdAt,
+    }
   });
 }));
 

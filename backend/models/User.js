@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
+    clerkId: { type: String, unique: true, sparse: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["player", "coach", "admin", "scout"], default: "player" },
+    password: { type: String }, // Optional for Clerk users
+    role: { type: String, enum: ["player", "coach", "admin", "scout"] },
     age: { type: Number, min: 5, max: 100 },
     gender: { type: String, enum: ["male", "female", "other"] },
     sport: { type: String },
