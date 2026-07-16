@@ -12,6 +12,11 @@ An AI-powered, full-stack sports performance management platform built with mode
 - **Player Scouting & Comparison**: Compare athlete metrics side-by-side to make data-driven decisions.
 - **Secure Architecture**: JWT-based authentication, request rate-limiting, centralized error handling, and structured logging.
 
+### 🆕 Recent Updates
+- **Strict Linting Compliance**: Refactored frontend components to adhere to strict React Hook rules and eliminated all unused variables/imports.
+- **Render Optimizations**: Extracted static child components (e.g., `CustomTooltip`) to prevent severe cascading re-renders in charts.
+- **Hardened Configuration**: Improved `.env` loading and secure graceful fallbacks for MongoDB when running in local offline environments.
+- **Merge Conflict Resolution**: Synchronized the backend `validators.js` and `events.log` ensuring a perfectly clean codebase.
 ---
 
 ## 🚀 Tech Stack
