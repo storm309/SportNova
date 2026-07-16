@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import api from "../api/api";
 import SportsRecommendations from "../components/SportsRecommendations";
+import { useAuth } from "../context/AuthContext";
 export default function AdminPanel() {
+  const { logout: authLogout } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,30 +19,9 @@ export default function AdminPanel() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filterRole, setFilterRole] = useState("");
   const navigate = useNavigate();
-  // 🚨 redirect if not admin
-  const validateAdmin = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      const res = await api.get("/auth/me", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.data.user.role !== "admin") {
-        navigate("/dashboard");
-      }
-    } catch {
-      navigate("/login");
-    }
-  };
   const loadUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await api.get("/admin/users", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/admin/users");
       const usersData = Array.isArray(res.data) ? res.data : (res.data.data || []);
       setUsers(usersData);
     } catch (err) {
@@ -52,17 +33,14 @@ export default function AdminPanel() {
     }
   };
   useEffect(() => {
-    validateAdmin();
     loadUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const changeRole = async (id, role) => {
     try {
-      const token = localStorage.getItem("token");
       const res = await api.patch(
         `/admin/users/${id}/role`,
-        { role },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { role }
       );
       setUsers(users.map(u => u._id === id ? res.data : u));
       setMsg(`User role updated to ${role.toUpperCase()}`);
@@ -75,10 +53,7 @@ export default function AdminPanel() {
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure? This cannot be undone.")) return;
     try {
-      const token = localStorage.getItem("token");
-      await api.delete(`/admin/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/admin/users/${id}`);
       setUsers(users.filter(u => u._id !== id));
       setMsg("User deleted");
       setTimeout(() => setMsg(""), 2000);
@@ -88,7 +63,7 @@ export default function AdminPanel() {
     }
   };
   const logout = () => {
-    localStorage.clear();
+    authLogout();
     navigate("/login");
   };
   const filteredUsers = Array.isArray(users) ? users.filter(user => {

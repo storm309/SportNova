@@ -7,8 +7,11 @@ const connectDB = async () => {
   }
 
   try {
+    // Prevent 10-second hangs when disconnected by failing fast
+    mongoose.set("bufferTimeoutMS", 500);
+
     await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 2000,
     });
     console.log("✅ MongoDB Connected Successfully");
   } catch (error) {

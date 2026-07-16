@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import SportsRecommendations from "../components/SportsRecommendations";
 import api from "../api/api";
+import { useAuth } from "../context/AuthContext";
 const PerformanceChart = ({ data }) => {
   const chartData = Array.isArray(data) ? data : [];
   const maxValue = chartData.length > 0 
@@ -68,22 +69,12 @@ export default function Dashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
-    verifyLogin();
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // redirect if not logged in
-  const verifyLogin = () => {
-    if (!localStorage.getItem("token")) {
-      navigate("/login");
-    }
-  };
   const loadData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await api.get("/performance/my", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/performance/my");
       const performances = Array.isArray(res.data) ? res.data : (res.data.data || []);
       setList(performances);
     } catch (err) {
@@ -100,10 +91,8 @@ export default function Dashboard() {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       if (videoFile) fd.append("videoFile", videoFile);
-      const token = localStorage.getItem("token");
       await api.post("/performance/add", fd, {
         headers: { 
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
         }
       });
@@ -119,8 +108,9 @@ export default function Dashboard() {
       setIsSubmitting(false);
     }
   };
+  const { logout: authLogout } = useAuth();
   const logout = () => {
-    localStorage.clear();
+    authLogout();
     navigate("/login");
   };
   const stats = {

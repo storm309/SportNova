@@ -7,7 +7,9 @@ import {
 } from "lucide-react";
 import api from "../api/api";
 import SportsRecommendations from "../components/SportsRecommendations";
+import { useAuth } from "../context/AuthContext";
 export default function ScoutDashboard() {
+  const { logout: authLogout } = useAuth();
   const navigate = useNavigate();
   const [athletes, setAthletes] = useState([]);
   const [loading, setLoading] = useState(false); 
@@ -50,8 +52,7 @@ export default function ScoutDashboard() {
     }
   };
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    authLogout();
     navigate("/login");
   };
   const currentAthlete = useMemo(() => {

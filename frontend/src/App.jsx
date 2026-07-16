@@ -12,10 +12,19 @@ import ScoutDashboard from "./pages/ScoutDashboard";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Contact from "./pages/Contact";
-import Onboarding from "./pages/Onboarding";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+
 function ProtectedRoute({ children, roles }) {
   const { user, token, loading } = useAuth();
-  if (loading) return <div className="text-white p-10">Loading...</div>;
+  
+  if (loading) {
+    return (
+      <div className="bg-slate-950 min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
   if (!token) return <Navigate to="/login" replace />;
   if (roles && !roles.includes(user?.role)) {
     return <Navigate to="/unauthorized" replace />;
@@ -23,8 +32,25 @@ function ProtectedRoute({ children, roles }) {
   return children;
 }
 function PublicRoute({ children }) {
-  const { token } = useAuth();
-  if (token) return <Navigate to="/" replace />;
+  const { token, user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="bg-slate-950 min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  if (token) {
+    if (!user) return <Navigate to="/dashboard" replace />;
+    switch (user.role) {
+      case "coach": return <Navigate to="/coach" replace />;
+      case "admin": return <Navigate to="/admin" replace />;
+      case "scout": return <Navigate to="/scout" replace />;
+      default: return <Navigate to="/dashboard" replace />;
+    }
+  }
   return children;
 }
 export default function App() {
@@ -52,8 +78,8 @@ export default function App() {
         }
       />
       <Route
-        path="/onboarding"
-        element={<Onboarding />}
+        path="/sso-callback"
+        element={<AuthenticateWithRedirectCallback />}
       />
       {}
       <Route

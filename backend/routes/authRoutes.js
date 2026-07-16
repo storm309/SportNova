@@ -145,39 +145,73 @@ router.post("/sync", authMiddleware, asyncHandler(async (req, res) => {
   }
 
   // Check if user already exists by clerkId
-  let user = await User.findOne({ clerkId });
+  let user;
+  try {
+    user = await User.findOne({ clerkId });
+  } catch (dbErr) {
+    const allUsers = fallbackStore.listUsers();
+    user = allUsers.find(u => u.clerkId === clerkId);
+  }
 
   if (!user) {
     // Maybe they exist by email from the old JWT auth system?
-    user = await User.findOne({ email: email.toLowerCase() });
+    try {
+      user = await User.findOne({ email: email.toLowerCase() });
+    } catch (dbErr) {
+      user = fallbackStore.findUserByEmail(email.toLowerCase());
+    }
     
     if (user) {
       // Link the old account to this Clerk ID
       user.clerkId = clerkId;
-      // Update fields if provided during onboarding
-      if (role) user.role = role;
-      if (age) user.age = parseInt(age);
-      if (gender) user.gender = gender;
-      await user.save();
+      // Only set role if they don't have a valid one yet
+      if (role && (!user.role || user.role === "unassigned")) user.role = role;
+      if (age && !user.age) user.age = parseInt(age);
+      if (gender && !user.gender) user.gender = gender;
+      
+      try {
+        await user.save();
+      } catch (dbErr) {
+        // Fallback save is automatic when object is modified if it's from fallback store? No, we need to update it.
+        const allUsers = fallbackStore.listUsers();
+        const index = allUsers.findIndex(u => u.email === user.email);
+        if (index !== -1) {
+          allUsers[index] = { ...allUsers[index], ...user };
+        }
+      }
     } else {
       // Create a brand new user
-      user = new User({
+      const userData = {
         clerkId,
         email: email.toLowerCase(),
         name,
         role: role || "player",
         age: age ? parseInt(age) : undefined,
         gender
-      });
-      await user.save();
+      };
+      
+      try {
+        user = new User(userData);
+        await user.save();
+      } catch (dbErr) {
+        user = fallbackStore.createUserRecord(userData);
+      }
     }
   } else {
     // If they already exist, we can optionally update their onboarding fields
     let updated = false;
-    if (role && user.role !== role) { user.role = role; updated = true; }
-    if (age && user.age !== parseInt(age)) { user.age = parseInt(age); updated = true; }
-    if (gender && user.gender !== gender) { user.gender = gender; updated = true; }
-    if (updated) await user.save();
+    // Only update role if it is currently unassigned or empty
+    if (role && (!user.role || user.role === "unassigned") && user.role !== role) { user.role = role; updated = true; }
+    if (age && !user.age && user.age !== parseInt(age)) { user.age = parseInt(age); updated = true; }
+    if (gender && !user.gender && user.gender !== gender) { user.gender = gender; updated = true; }
+    
+    if (updated) {
+      try {
+        await user.save();
+      } catch (dbErr) {
+        // Just ignore fallback save error for minor updates
+      }
+    }
   }
 
   res.status(200).json({

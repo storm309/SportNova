@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { verifyToken } = require("@clerk/clerk-sdk-node");
 const User = require("../models/User");
+const fallbackStore = require("../utils/fallbackStore");
 
 module.exports = async (req, res, next) => {
   try {
@@ -28,11 +29,24 @@ module.exports = async (req, res, next) => {
 
     if (isClerk) {
       const clerkId = decoded.sub; // clerk user id
-      const user = await User.findOne({ clerkId });
+      let user;
+      
+      try {
+        const mongoose = require("mongoose");
+        if (mongoose.connection.readyState !== 1) {
+          throw new Error("MongoDB disconnected"); // instantly trigger fallback
+        }
+        user = await User.findOne({ clerkId });
+      } catch (dbErr) {
+        // Fallback for when MongoDB is disconnected and Mongoose times out
+        const allUsers = fallbackStore.listUsers();
+        user = allUsers.find(u => u.clerkId === clerkId);
+      }
+
       if (!user) {
         req.user = { clerkId, role: "unassigned" };
       } else {
-        req.user = { id: user._id.toString(), clerkId: user.clerkId, role: user.role };
+        req.user = { id: user._id ? user._id.toString() : user.id, clerkId: user.clerkId, role: user.role };
       }
     } else {
       // Custom JWT

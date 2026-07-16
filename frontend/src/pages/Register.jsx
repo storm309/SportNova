@@ -5,7 +5,7 @@ import {
   User, Lock, Mail, ArrowRight, AlertCircle,
   CheckCircle2, Eye, EyeOff, ShieldCheck, Megaphone, Search, Calendar
 } from "lucide-react";
-import { SignUpButton } from "@clerk/clerk-react";
+import { useSignUp } from "@clerk/clerk-react";
 import api from "../api/api";
 
 export default function Register() {
@@ -15,6 +15,17 @@ export default function Register() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const { signUp, isLoaded: isSignUpLoaded } = useSignUp();
+
+  const handleGoogleSignUp = () => {
+    if (!isSignUpLoaded) return;
+    signUp.authenticateWithRedirect({
+      strategy: "oauth_google",
+      redirectUrl: "/sso-callback",
+      redirectUrlComplete: "/dashboard",
+    });
+  };
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -223,16 +234,17 @@ export default function Register() {
             <div className="relative flex justify-center text-xs"><span className="bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-700/50">Or</span></div>
           </div>
 
-          <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full bg-white hover:bg-gray-100 text-slate-900 py-3 rounded-xl font-bold tracking-wide transition-all duration-300 shadow-md flex items-center justify-center gap-3"
-            >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" alt="Google" />
-              Sign up with Google
-            </motion.button>
-          </SignUpButton>
+          <motion.button
+            type="button"
+            onClick={handleGoogleSignUp}
+            disabled={!isSignUpLoaded}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="w-full bg-white hover:bg-gray-100 text-slate-900 py-3 rounded-xl font-bold tracking-wide transition-all duration-300 shadow-md flex items-center justify-center gap-3 disabled:opacity-70"
+          >
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" alt="Google" />
+            Sign up with Google
+          </motion.button>
 
         </div>
         

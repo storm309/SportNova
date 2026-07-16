@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
+import {
   Menu, X, User, LogOut, LayoutDashboard, Video,
   BarChart, Users, ShieldCheck, Mail, ChevronRight,
   Sparkles, TrendingUp, Award, Phone, PlayCircle,
   Trophy, Activity, Target, Zap, Eye, Globe, Lock, CheckCircle
 } from "lucide-react";
-import api from "../api/api";
+import { useAuth } from "../context/AuthContext";
+
 const LegalModal = ({ title, content, isOpen, onClose }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
       <div className="relative bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-sm shadow-2xl p-8 overflow-y-auto max-h-[80vh]">
-        <button 
+        <button
           className="absolute top-4 right-4 text-slate-400 hover:text-white transition-all hover:rotate-90"
           onClick={onClose}
         >
@@ -31,31 +31,25 @@ const LegalModal = ({ title, content, isOpen, onClose }) => {
     </div>
   );
 };
+
 export default function Home() {
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      api.get("/auth/me", { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => setUser(res.data.user))
-        .catch(() => {
-          localStorage.clear();
-          setUser(null);
-        });
-    }
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   const logoutUser = () => {
-    localStorage.clear();
-    setUser(null);
+    logout();
     window.location.href = "/login";
   };
+
   const openModal = (type) => {
     if (type === "privacy") {
       setModalContent({

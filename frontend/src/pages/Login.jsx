@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
-import { SignInButton } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 import api from "../api/api";
 
 export default function Login() {
@@ -11,6 +11,17 @@ export default function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const { signIn, isLoaded: isSignInLoaded } = useSignIn();
+
+  const handleGoogleLogin = () => {
+    if (!isSignInLoaded) return;
+    signIn.authenticateWithRedirect({
+      strategy: "oauth_google",
+      redirectUrl: "/sso-callback",
+      redirectUrlComplete: "/dashboard",
+    });
+  };
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -134,16 +145,17 @@ export default function Login() {
             <div className="relative flex justify-center text-xs"><span className="bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-700/50">Or</span></div>
           </div>
 
-          <SignInButton mode="modal" forceRedirectUrl="/onboarding">
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full bg-white hover:bg-gray-100 text-slate-900 py-3.5 rounded-xl font-bold tracking-wide transition-all duration-300 shadow-md flex items-center justify-center gap-3"
-            >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-              Sign in with Google
-            </motion.button>
-          </SignInButton>
+          <motion.button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={!isSignInLoaded}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="w-full bg-white hover:bg-gray-100 text-slate-900 py-3.5 rounded-xl font-bold tracking-wide transition-all duration-300 shadow-md flex items-center justify-center gap-3 disabled:opacity-70"
+          >
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+            Sign in with Google
+          </motion.button>
 
         </div>
         
